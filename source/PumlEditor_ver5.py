@@ -174,7 +174,7 @@ class PumlEditor(GuiBaseClass):
         self.end_search_idx: str = "end"
 
         
-#---------KEYS BINDING TO ROOT--------------------------------------------------------------------
+#---------KEYS BINDING --------------------------------------------------------------------
         # open file
         self.root.bind("<Control-o>", self.file_open)
         # save file
@@ -182,13 +182,15 @@ class PumlEditor(GuiBaseClass):
         # save file as
         self.root.bind("<Control-Shift-s>", self.file_save_as)
         # convert to image
-        self.root.bind("<Control-Return>", self.convert2_image_button_func)
+        self.root.bind("<Control-Alt-n>", self.convert2_image_button_func)
         # search
-        self.root.bind("<Control-f>", self.search_text)
-        
+        self.root.bind("<Control-Alt-s>", self.search_text)
+        # switch to search entry
+        self.root.bind("<Control-f>", self.switch2_search_entry)
+        # Turn on focus mode
+        self.root.bind("<Control-k><f>", self.focus_mode)
 
-#---------Methods: OPEN, SAVE FILE--------------------------------------------------------------------
-
+#---------METHODS: OPEN, SAVE FILE--------------------------------------------------------------------
     def file_open(self,event=None):
         self.filename=filedialog.askopenfilename(initialdir=self.previous_dir) 
         if self.filename != "":
@@ -225,7 +227,6 @@ class PumlEditor(GuiBaseClass):
 
 
 #-------METHOD CONVERT TEXT DIAGRAM TO IMAGE-----------------------------------------------    
-    
     def convert2_image(self,event=None) -> None:
         # instantiate a KrokiEncoder instance: filepath, diagram type, image type is png
         self.kroki_diagram = KrokiEncoder(self.filename, 
@@ -244,9 +245,8 @@ class PumlEditor(GuiBaseClass):
         self.file_save()
         self.convert2_image()
 
-#--------METHOD SEARCH------------------------------------------------------
-        
-    def search_text(self,event=None) -> None:
+#--------METHOD SEARCH------------------------------------------------------  
+    def search_text(self, event=None) -> None:
         if self.query != self.entry_search.get(): # when users change the query string while clicking the find-Next button for current query.
             self.query = self.entry_search.get()
             for tag in self.text.tag_names(index=None):
@@ -284,7 +284,10 @@ class PumlEditor(GuiBaseClass):
             self.text.tag_remove(tag, "1.0", "end")
         self.entry_search.delete("0","end")
 
-#-------left/right/even_split minimizing METHODS----------------------------------------------------------
+    def switch2_search_entry(self, event=None) -> None:
+        self.entry_search.focus_set()
+
+#-------METHODS: left/right/even_split minimizing ----------------------------------------------------------
     def left_minimizing(self,event=None) -> None:
         self.panwind.sash_place(0,x=5,y=100) # 5 pixels from the left and 100 pixels from top
     
@@ -293,7 +296,8 @@ class PumlEditor(GuiBaseClass):
     
     def even_split(self,event=None) -> None:
         self.panwind.sash_place(0,x=600,y=100) # 600 pixels from the left and 100 pixels from top
-#--------------------Focus Mode METHOD-------------------------------------------------------       
+
+#--------------------METHODS: Focus Mode -------------------------------------------------------       
     def change2_dark_mode_color(self,event=None) -> None:
         self.text.configure(background="#1e1f1e",
                                 foreground="#9bd9f6",
