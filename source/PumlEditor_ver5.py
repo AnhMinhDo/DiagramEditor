@@ -118,31 +118,27 @@ class PumlEditor(GuiBaseClass):
         imgdata= no_img_icon
         self.image = tk.PhotoImage(data=imgdata)
         self.imagewidget.configure(image=self.image)
-        
-#-------View: buttons minimize left/right/even_split -------------------------------------------------------
-    # add minimizing frame
-        self.minimizing_frame = ttk.Frame(self.frame)
-        self.minimizing_frame.pack(fill = 'both', expand = False, side='top')
-        # add button left_minimizing to minimizing frame
-        self.button_left_minimizing = ttk.Button(self.minimizing_frame, 
-                                       text = "<-- left",
-                                       command=self.left_minimizing)
-        self.button_left_minimizing.pack(side = 'left', fill = 'x', expand = True)
-        # add button even_split to minimizing frame
-        self.button_even_split = ttk.Button(self.minimizing_frame, 
-                                       text = "| Split |",
-                                       command=self.even_split)
-        self.button_even_split.pack(side = 'left', fill = 'x', expand = True)
-        # add button right_minimizing to minimizing_frame
-        self.button_right_minimizing = ttk.Button(self.minimizing_frame, 
-                                       text = "Right -->",
-                                       command=self.right_minimizing)
-        self.button_right_minimizing.pack(side = 'right', fill = 'x', expand = True)
-
+                
 #-------------------View: Focus Mode Frame------------------------------------------------------        
         # add focus_mode frame
         self.focus_mode_frame = tk.Frame(self.frame)
         self.focus_mode_frame.pack(fill = 'both', expand = False, side='top')
+        # add button left_minimizing to focus_mode frame
+        self.button_left_minimizing = ttk.Button(self.focus_mode_frame, 
+                                       text = "<-- left",
+                                       command=self.left_minimizing)
+        self.button_left_minimizing.pack(side = 'left', fill = 'x', expand = True)
+        # add button even_split to focus_mode frame
+        self.button_even_split = ttk.Button(self.focus_mode_frame, 
+                                       text = "| Split |",
+                                       command=self.even_split)
+        self.button_even_split.pack(side = 'left', fill = 'x', expand = True)
+        # add button right_minimizing to focus_mode_frame
+        self.button_right_minimizing = ttk.Button(self.focus_mode_frame, 
+                                       text = "Right -->",
+                                       command=self.right_minimizing)
+        self.button_right_minimizing.pack(side = 'left', fill = 'x', expand = True)
+
         # Variable to store the checkbutton button_focus_mode state
         self.focus_mode_var = tk.BooleanVar(value=False)
         # add button focus_mode to focus_mode_frame
@@ -320,7 +316,6 @@ class PumlEditor(GuiBaseClass):
             # hide the search frame
             self.convert2_img_frame.pack_forget()
             self.search_frame.pack_forget()
-            self.minimizing_frame.pack_forget()
             # change to dark mode
             self.change2_dark_mode_color()
             self.focus_mode_var = not self.focus_mode_var # change state in the variable
@@ -334,10 +329,6 @@ class PumlEditor(GuiBaseClass):
                                     fill = 'both', 
                                    expand = False, 
                                    side='top')
-            self.minimizing_frame.pack(after=self.panwind,
-                                       fill = 'both', 
-                                       expand = False, 
-                                       side='top')
             self.change2_light_mode_color()
             self.focus_mode_var = not self.focus_mode_var # change state in the variable
 
