@@ -1,22 +1,24 @@
 import tkinter as tk
 import tkinter.ttk as ttk
 import tkinter.messagebox as mbox
-import tkinter.filedialog as filedialog
 from GuiBaseClass import GuiBaseClass
 import os, sys
-from tkinter import colorchooser
 from no_img_icon import no_img_icon
 from LeftRightSplit import LeftRightSplit
 from SearchFunction import SearchFunction
 from Convert2Image import Convert2Image
 from FocusMode import FocusMode
+from OpenSaveFile import OpenSaveFile
+from ChangeColor import ChangeColor
 
 
-class PumlEditor(GuiBaseClass,
-                 Convert2Image,
-                 SearchFunction, 
-                 LeftRightSplit,
-                 FocusMode):
+class DiagramEditor(GuiBaseClass,
+                    OpenSaveFile,
+                    Convert2Image,
+                    SearchFunction, 
+                    LeftRightSplit,
+                    FocusMode,
+                    ChangeColor):
     def __init__(self,root):
         super().__init__(root)
 
@@ -215,12 +217,7 @@ class PumlEditor(GuiBaseClass,
             message="PlantUML Editor 2023\nAuthor: Anh-Minh Do\nPotsdam, Germany")
 
 
+def main() -> int:
+    return 0
 if __name__ == '__main__':
-    root=tk.Tk()
-    root.geometry("1200x700")
-    pedit = PumlEditor(root)
-    root.title("PumlEditor 2023")
-    if len(sys.argv) > 1:
-        if os.path.exists(sys.argv[1]):
-            pedit.file_open(sys.argv[1])
-    pedit.mainLoop() 
+     main()
