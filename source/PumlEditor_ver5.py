@@ -4,13 +4,19 @@ import tkinter.messagebox as mbox
 import tkinter.filedialog as filedialog
 from GuiBaseClass import GuiBaseClass
 import os, sys
-import re
 from tkinter import colorchooser
-from KrokiEncoder import KrokiEncoder
 from no_img_icon import no_img_icon
+from LeftRightSplit import LeftRightSplit
+from SearchFunction import SearchFunction
+from Convert2Image import Convert2Image
+from FocusMode import FocusMode
 
 
-class PumlEditor(GuiBaseClass):
+class PumlEditor(GuiBaseClass,
+                 Convert2Image,
+                 SearchFunction, 
+                 LeftRightSplit,
+                 FocusMode):
     def __init__(self,root):
         super().__init__(root)
 
@@ -186,167 +192,9 @@ class PumlEditor(GuiBaseClass):
         # Turn on focus mode
         self.root.bind("<Control-k><f>", self.focus_mode)
 
-#---------METHODS: OPEN, SAVE FILE--------------------------------------------------------------------
-    def file_open(self,event=None):
-        self.filename=filedialog.askopenfilename(initialdir=self.previous_dir) 
-        if self.filename != "":
-            self.text.delete('1.0','end')
-            file= open(self.filename,"rt")
-            for line in file:
-                self.text.insert("end",line)
-            self.message(f"File {self.filename} was opened!")
-            self.setAppTitle(self.filename)
-            self.file_save()
-            self.previous_dir=self.filename
-
-    def file_save(self, event=None) -> None:
-        if self.filename is not None:
-            file = open(self.filename,"w")
-            file.write(self.text.get("0.0","end"))
-            file.close()
-            self.setAppTitle (self.filename)           
-        else :
-            self.file_save_as()
-
-    def file_save_as(self, event=None) -> None:
-        self.filedialog=filedialog.asksaveasfile( 
-        initialdir=self.previous_dir,
-        filetypes= [("plantuml",".pml"),
-                    ("erd",".erd"),
-                    ("text",".txt"),
-                    ("other",".*")],
-        defaultextension=("text",".txt"))
-        if self.filedialog!= None :
-            self.filename=self.filedialog.name
-            self.previous_dir=self.filename
-            self.file_save()
-
-
-#-------METHOD CONVERT TEXT DIAGRAM TO IMAGE-----------------------------------------------    
-    def convert2_image(self,event=None) -> None:
-        # instantiate a KrokiEncoder instance: filepath, diagram type, image type is png
-        self.kroki_diagram = KrokiEncoder(self.filename, 
-                                        self.combobox.get(),
-                                        "png")
-        imgfile = re.sub(".[a-z]+$",".png",self.filename)
-        #write image to file
-        self.kroki_diagram.export_image(imgfile)
-        #show image in ImageWidget
-        if os.path.exists(imgfile):
-                self.image.configure(file=imgfile)
-                self.message(f"Displaying {imgfile}")
-        
-    def convert2_image_button_func(self, event=None) -> None:
-        # instantiate a KrokiEncoder instance: filepath, diagram type, image type is png
-        self.file_save()
-        self.convert2_image()
-
-#--------METHOD SEARCH------------------------------------------------------  
-    def search_text(self, event=None) -> None:
-        if self.query != self.entry_search.get(): # when users change the query string while clicking the find-Next button for current query.
-            self.query = self.entry_search.get()
-            for tag in self.text.tag_names(index=None):
-                self.text.tag_remove(tag, "1.0", "end")
-            self.first_letter_index = None
-            self.last_letter_index = None
-            self.start_search_idx = "1.0"
-            self.end_search_idx = "end"
-        if self.last_letter_index is not None: # when users want to find the next occurrence.
-            self.start_search_idx = self.last_letter_index
-        self.first_letter_index:str = self.text.search(
-                                            self.query, 
-                                            index=self.start_search_idx, 
-                                            nocase=True, 
-                                            stopindex=self.end_search_idx)
-        if self.first_letter_index == "": # When the search reaches the end of text widget.
-            for tag in self.text.tag_names(index=None):
-                self.text.tag_remove(tag, "1.0", "end")
-            self.first_letter_index = None
-            self.last_letter_index = None
-            self.start_search_idx = "1.0"
-            self.end_search_idx = "end"
-        else:
-            line, character = self.first_letter_index.split(sep=".", 
-                                                                maxsplit=1)
-            self.last_letter_index = f"{line}.{int(character)+len(self.query)}"
-            self.text.tag_add("highlight", 
-                            self.first_letter_index, 
-                            self.last_letter_index)
-            self.text.tag_configure("highlight", background="yellow")
-            self.text.see(self.last_letter_index)
-
-    def reset_search_text(self,event=None) -> None:
-        for tag in self.text.tag_names(index=None):
-            self.text.tag_remove(tag, "1.0", "end")
-        self.entry_search.delete("0","end")
-
-    def switch2_search_entry(self, event=None) -> None:
-        self.entry_search.focus_set()
-
-#-------METHODS: left/right/even_split minimizing ----------------------------------------------------------
-    def left_minimizing(self,event=None) -> None:
-        self.panwind.sash_place(0,x=5,y=100) # 5 pixels from the left and 100 pixels from top
-    
-    def right_minimizing(self,event=None) -> None:
-        self.panwind.sash_place(0,x=1195,y=100) # 1195 pixels from the left and 100 pixels from top
-    
-    def even_split(self,event=None) -> None:
-        self.panwind.sash_place(0,x=600,y=100) # 600 pixels from the left and 100 pixels from top
-
-#--------------------METHODS: Focus Mode -------------------------------------------------------       
-    def change2_dark_mode_color(self,event=None) -> None:
-        self.text.configure(background="#1e1f1e",
-                                foreground="#9bd9f6",
-                                insertbackground="#FCFEFE")
-        self.imagewidget.configure(background="#121213")
-        self.focus_mode_frame.configure(background="#1e1f1e")
-        self.button_focus_mode.configure(background="#1e1f1e",
-                                             foreground="#21a143")
-    def change2_light_mode_color(self,event=None) -> None:
-        self.text.configure(background="#DDE9E9",
-                                foreground="#022222",
-                                insertbackground="#101313")
-        self.imagewidget.configure(background="#C2CDCD")
-        self.focus_mode_frame.configure(background="#DDE9E9")
-        self.button_focus_mode.configure(background="#DDE9E9",
-                                             foreground="#022222")
-        
-    def focus_mode(self,event=None) -> None:
-        if self.focus_mode_var:
-            # hide the search frame
-            self.convert2_img_frame.pack_forget()
-            self.search_frame.pack_forget()
-            # change to dark mode
-            self.change2_dark_mode_color()
-            self.focus_mode_var = not self.focus_mode_var # change state in the variable
-        else:
-            self.convert2_img_frame.pack(before=self.panwind,
-                                         fill = 'both', 
-                                         expand = False, 
-                                         side='top')
-            self.search_frame.pack(before=self.panwind,
-                                   after=self.convert2_img_frame,
-                                    fill = 'both', 
-                                   expand = False, 
-                                   side='top')
-            self.change2_light_mode_color()
-            self.focus_mode_var = not self.focus_mode_var # change state in the variable
 
 #-------OTHER METHODS----------------------------------------------------------
-    def text_color(self,event=None) -> None:
-        choose_color=colorchooser.askcolor()
-        self.text.configure(fg=choose_color[1])
-
-    def textblack(self,event=None) -> None:
-        self.text.configure(fg="black")
-
-    def backgroundcolor(self,event=None) -> None:
-        choose_color=colorchooser.askcolor()
-        self.text.configure(background=choose_color[1])
-
-    def whitebackground(self,event=None) -> None:
-        self.text.configure(background="white")
-    
+        
     def toggle_checkButton(self,event=None) -> None:
         self.checkbutton_var = not self.checkbutton_var
     
