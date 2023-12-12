@@ -4,6 +4,8 @@ import tkinter.messagebox as mbox
 import sys
 from DGStatusBar import DGStatusBar
 import os
+
+
 class GuiBaseClass():
   def __init__(self,root):
       # create widgets
