@@ -2,6 +2,7 @@ from KrokiEncoder import KrokiEncoder
 import re
 import os
 
+
 class Convert2Image:
     def __init__(self) -> None:
         pass
@@ -11,13 +12,15 @@ class Convert2Image:
         self.kroki_diagram = KrokiEncoder(self.filename, 
                                         self.combobox.get(),
                                         "png")
-        imgfile = re.sub(".[a-z]+$",".png",self.filename)
+        imgfile_png = re.sub(".[a-z]+$",".png",self.filename)
+
         #write image to file
-        self.kroki_diagram.export_image(imgfile)
+        self.kroki_diagram.export_image(imgfile_png)
+
         #show image in ImageWidget
-        if os.path.exists(imgfile):
-                self.image.configure(file=imgfile)
-                self.message(f"Displaying {imgfile}")
+        if os.path.exists(imgfile_png):
+                self.image.configure(file=imgfile_png)
+                self.message(f"Displaying {imgfile_png}")
         
     def convert2_image_button_func(self, event=None) -> None:
         # instantiate a KrokiEncoder instance: filepath, diagram type, image type is png

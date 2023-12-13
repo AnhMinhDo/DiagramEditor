@@ -194,7 +194,6 @@ class DiagramEditor(GuiBaseClass,
         # Turn on focus mode
         self.root.bind("<Control-k><f>", self.focus_mode)
 
-
 #-------OTHER METHODS----------------------------------------------------------
         
     def toggle_checkButton(self,event=None) -> None:
