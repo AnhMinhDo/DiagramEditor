@@ -106,4 +106,4 @@ if __name__ == "__main__":
     main()
 
 # Author: Anh-Minh Do, 12.2023, Potsdam, Germany
-# License: GPL3.0
+# License: MIT

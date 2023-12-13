@@ -3,7 +3,7 @@ from DiagramEditor import DiagramEditor
 import os
 import sys
 
-def main() -> int:
+if __name__ == "__main__":
     root=tk.Tk()
     root.geometry("1200x700")
     pedit = DiagramEditor(root)
@@ -12,7 +12,3 @@ def main() -> int:
         if os.path.exists(sys.argv[1]):
             pedit.file_open(sys.argv[1])
     pedit.mainLoop()
-    return 0
-
-if __name__ == "__main__":
-    main()
