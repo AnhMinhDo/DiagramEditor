@@ -1,24 +1,10 @@
-class FocusMode:
+from ChangeColor import ChangeColor
+
+class FocusMode(ChangeColor):
     def __init__(self) -> None:
         pass
     #--------------------METHODS: Focus Mode -------------------------------------------------------       
-    def change2_dark_mode_color(self,event=None) -> None:
-        self.text.configure(background="#1e1f1e",
-                                foreground="#9bd9f6",
-                                insertbackground="#FCFEFE")
-        self.imagewidget.configure(background="#121213")
-        self.focus_mode_frame.configure(background="#1e1f1e")
-        self.button_focus_mode.configure(background="#1e1f1e",
-                                             foreground="#21a143")
-    def change2_light_mode_color(self,event=None) -> None:
-        self.text.configure(background="#DDE9E9",
-                                foreground="#022222",
-                                insertbackground="#101313")
-        self.imagewidget.configure(background="#C2CDCD")
-        self.focus_mode_frame.configure(background="#DDE9E9")
-        self.button_focus_mode.configure(background="#DDE9E9",
-                                             foreground="#022222")
-        
+
     def focus_mode(self,event=None) -> None:
         if self.focus_mode_var:
             # hide the search frame

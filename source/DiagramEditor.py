@@ -3,6 +3,7 @@ import tkinter.ttk as ttk
 import tkinter.messagebox as mbox
 from GuiBaseClass import GuiBaseClass
 import os, sys
+import yaml
 from no_img_icon import no_img_icon
 from LeftRightSplit import LeftRightSplit
 from SearchFunction import SearchFunction
@@ -108,7 +109,8 @@ class DiagramEditor(GuiBaseClass,
         self.panwind.pack(fill="both", expand=True)
         
         # Create textWidget
-        self.text = tk.Text(self.panwind, wrap="word", undo=True, width=50)
+        self.text = tk.Text(self.panwind, wrap="word", undo=True, width=50,
+                            insertofftime=500, insertontime=500)
         self.text.pack(side="left",fill="both", expand=True)
         
         #Create ImageWidget
@@ -162,11 +164,16 @@ class DiagramEditor(GuiBaseClass,
         self.stbar = GuiBaseClass.statusbar
         GuiBaseClass.message(self, msg="Waiting ......")
 
-#----------------instance attributes-------------------------------------------------------
+#------load info from config file and modify -----------------------------------------
 
-        # Used to save the directory of the opened file
-        self.previous_dir: str = os.getcwd()
-        self.filename: None = None
+
+#----------------instance attributes-------------------------------------------------------
+        self.config_info = None
+        with open("F:/Python_files/DiagramEditor/DiagramEditor/source/config.yaml","r") as config_file:
+            self.config_info = yaml.safe_load(config_file)
+        self.filename = self.config_info["filename"]
+        self.previous_dir = None if self.filename is None else os.path.dirname(self.filename)
+        self.file_dialog = None
 
         self.kroki_diagram = None
 
@@ -184,7 +191,7 @@ class DiagramEditor(GuiBaseClass,
         # save file
         self.root.bind("<Control-s>", self.file_save)
         # save file as
-        self.root.bind("<Control-Shift-s>", self.file_save_as)
+        self.root.bind("<Control-Shift-S>", self.file_save_as)
         # convert to image
         self.root.bind("<Control-Alt-n>", self.convert2_image_button_func)
         # search

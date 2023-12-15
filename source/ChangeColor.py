@@ -17,7 +17,23 @@ class ChangeColor:
 
     def whitebackground(self,event=None) -> None:
         self.text.configure(background="white")
- 
+    def change2_light_mode_color(self,event=None) -> None:
+        self.text.configure(background="#FFFFFF",
+                                foreground="#000000",
+                                insertbackground="#FFFFFF")
+        self.imagewidget.configure(background="#FFFFFF")
+        self.focus_mode_frame.configure(background="#FFFFFF")
+        self.button_focus_mode.configure(background="#FFFFFF",
+                                         foreground="#000000")
+    def change2_dark_mode_color(self,event=None) -> None:
+        self.text.configure(background="#1e1f1e",
+                                foreground="#9bd9f6",
+                                insertbackground="#FCFEFE")
+        self.imagewidget.configure(background="#121213")
+        self.focus_mode_frame.configure(background="#1e1f1e")
+        self.button_focus_mode.configure(background="#1e1f1e",
+                                             foreground="#21a143")
+        
 
 def main() -> int:
     return 0
