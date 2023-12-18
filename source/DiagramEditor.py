@@ -11,7 +11,7 @@ from Convert2Image import Convert2Image
 from FocusMode import FocusMode
 from OpenSaveFile import OpenSaveFile
 from ChangeColor import ChangeColor
-
+from TextWidgetBehavior import TextWidgetBehavior
 
 class DiagramEditor(GuiBaseClass,
                     OpenSaveFile,
@@ -19,7 +19,8 @@ class DiagramEditor(GuiBaseClass,
                     SearchFunction, 
                     LeftRightSplit,
                     FocusMode,
-                    ChangeColor):
+                    ChangeColor,
+                    TextWidgetBehavior):
     def __init__(self,root):
         super().__init__(root)
 
@@ -110,9 +111,11 @@ class DiagramEditor(GuiBaseClass,
         
         # Create textWidget
         self.text = tk.Text(self.panwind, wrap="word", undo=True, width=50,
-                            insertofftime=500, insertontime=500)
+                            insertofftime=500, insertontime=500,
+                            font=("Verdana",12)
+                            )
         self.text.pack(side="left",fill="both", expand=True)
-        
+
         #Create ImageWidget
         self.imagewidget = tk.Label(self.panwind,
                                     text="Display Image Here",
@@ -168,6 +171,7 @@ class DiagramEditor(GuiBaseClass,
 
 
 #----------------instance attributes-------------------------------------------------------
+        # config file stores state of the Application
         self.config_info = None
         with open("F:/Python_files/DiagramEditor/DiagramEditor/source/config.yaml","r") as config_file:
             self.config_info = yaml.safe_load(config_file)
@@ -175,6 +179,7 @@ class DiagramEditor(GuiBaseClass,
         self.previous_dir = None if self.filename is None else os.path.dirname(self.filename)
         self.file_dialog = None
 
+        # Store kroki diagram state
         self.kroki_diagram = None
 
         # Variable for function search_text
@@ -201,6 +206,8 @@ class DiagramEditor(GuiBaseClass,
         # Turn on focus mode
         self.root.bind("<Control-k><f>", self.focus_mode)
 
+#---------OTHER BEHAVIORS-----------------------------------------------------
+        self.text.bind("<Tab>", self.insert_4_spaces)
 #-------OTHER METHODS----------------------------------------------------------
         
     def toggle_checkButton(self,event=None) -> None:
