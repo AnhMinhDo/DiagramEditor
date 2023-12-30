@@ -1,26 +1,18 @@
 import tkinter as tk
 import tkinter.ttk as ttk
 import tkinter.messagebox as mbox
-from GuiBaseClass import GuiBaseClass
+from source.GuiBaseClass import GuiBaseClass
 import os, sys
+import re
 import yaml
-from no_img_icon import no_img_icon
-from LeftRightSplit import LeftRightSplit
-from SearchFunction import SearchFunction
-from Convert2Image import Convert2Image
-from FocusMode import FocusMode
-from OpenSaveFile import OpenSaveFile
-from ChangeColor import ChangeColor
-from TextWidgetBehavior import TextWidgetBehavior
+import tkinter.filedialog as filedialog
+from source.DisplayDiagram import DisplayDiagram
+from source.TextEditor import TextEditor
+from source.KrokiEncoder import KrokiEncoder
+from tkinter import colorchooser
 
-class DiagramEditor(GuiBaseClass,
-                    OpenSaveFile,
-                    Convert2Image,
-                    SearchFunction, 
-                    LeftRightSplit,
-                    FocusMode,
-                    ChangeColor,
-                    TextWidgetBehavior):
+
+class DiagramEditor(GuiBaseClass):
     def __init__(self,root):
         super().__init__(root)
 
@@ -73,7 +65,10 @@ class DiagramEditor(GuiBaseClass,
                             "graphviz", "ditaa",
                             "mermaid", "TikZ",
                             "Vega", "wireviz",
-                            "UMLet"]
+                            "UMLet", "BlockDiag",
+                            "SeqDiag", "ActDiag",
+                            "NwDiag", "PacketDiag",
+                            "RackDiag", "Structurizr"]
         self.combobox = ttk.Combobox(self.convert2_img_frame, 
                                      state = 'readonly', 
                                      values=diagram_type)
@@ -110,28 +105,18 @@ class DiagramEditor(GuiBaseClass,
         self.panwind.pack(fill="both", expand=True)
         
         # Create textWidget
-        self.text = tk.Text(self.panwind, wrap="word", undo=True, width=50,
-                            insertofftime=500, insertontime=500,
-                            font=("Verdana",12)
-                            )
-        self.text.pack(side="left",fill="both", expand=True)
+        self.text = TextEditor(self.panwind, side="left")
 
         #Create ImageWidget
-        self.imagewidget = tk.Label(self.panwind,
-                                    text="Display Image Here",
-                                    background="white")
-        self.imagewidget.pack(side="right",fill="both", expand=True)
-        
+        self.imagewidget = DisplayDiagram(self.panwind, "right")
 
         # Add text and imagewidget to panedwindow
-        self.panwind.add(self.text)
-        self.panwind.add(self.imagewidget)
+        self.panwind.add(self.text.text_editor)
+        self.panwind.add(self.imagewidget.image_widget)
         
         # Add image to imagewidget window
-        imgdata= no_img_icon
-        self.image = tk.PhotoImage(data=imgdata)
-        self.imagewidget.configure(image=self.image)
-                
+        self.imagewidget.load_image(".\data\icons\default_icon.png")
+
 #-------------------View: Focus Mode Frame------------------------------------------------------        
         # add focus_mode frame
         self.focus_mode_frame = tk.Frame(self.frame)
@@ -152,13 +137,10 @@ class DiagramEditor(GuiBaseClass,
                                        command=self.right_minimizing)
         self.button_right_minimizing.pack(side = 'left', fill = 'x', expand = True)
 
-        # Variable to store the checkbutton button_focus_mode state
-        self.focus_mode_var = tk.BooleanVar(value=False)
+        
         # add button focus_mode to focus_mode_frame
-        self.button_focus_mode = tk.Checkbutton(self.focus_mode_frame, 
+        self.button_focus_mode = ttk.Button(self.focus_mode_frame, 
                                        text = "Focus Mode",
-                                       variable=self.focus_mode_var,
-                                       indicatoron=False,
                                        command=self.focus_mode)
         self.button_focus_mode.pack(side = 'right', fill = 'x', expand = False)
 
@@ -166,9 +148,6 @@ class DiagramEditor(GuiBaseClass,
         # create the statusbar
         self.stbar = GuiBaseClass.statusbar
         GuiBaseClass.message(self, msg="Waiting ......")
-
-#------load info from config file and modify -----------------------------------------
-
 
 #----------------instance attributes-------------------------------------------------------
         # config file stores state of the Application
@@ -181,14 +160,6 @@ class DiagramEditor(GuiBaseClass,
 
         # Store kroki diagram state
         self.kroki_diagram = None
-
-        # Variable for function search_text
-        self.query: str = self.entry_search.get()
-        self.first_letter_index: None = None
-        self.last_letter_index: None = None
-        self.start_search_idx: str = "1.0"
-        self.end_search_idx: str = "end"
-
         
 #---------KEYS BINDING --------------------------------------------------------------------
         # open file
@@ -206,8 +177,146 @@ class DiagramEditor(GuiBaseClass,
         # Turn on focus mode
         self.root.bind("<Control-k><f>", self.focus_mode)
 
-#---------OTHER BEHAVIORS-----------------------------------------------------
-        self.text.bind("<Tab>", self.insert_4_spaces)
+#---------METHODS: OPEN, SAVE FILE--------------------------------------------------------------------
+    def write2_config(self, event=None) -> None:
+        with open("F:/Python_files/DiagramEditor/DiagramEditor/source/config.yaml","w") as config_file:
+                yaml.safe_dump(self.config_info, config_file, sort_keys=False)
+
+    def file_open(self,event=None):
+        self.filename=filedialog.askopenfilename(initialdir=self.previous_dir) 
+        if self.filename != "":
+            self.text.delete('1.0','end')
+            file= open(self.filename,"rt")
+            for line in file:
+                self.text.insert("end",line)
+            self.message(f"File {self.filename} was opened!")
+            self.setAppTitle(self.filename)
+            self.convert2_image()
+            self.config_info["filename"] = self.filename
+            self.previous_dir= os.path.dirname(self.filename)
+            self.write2_config()
+
+    def file_save(self, event=None) -> None:
+        if self.filename is not None:
+            file = open(self.filename,"w")
+            file.write(self.text.get("0.0","end"))
+            file.close()
+            self.setAppTitle(self.filename)           
+        else :
+            self.file_save_as()
+
+    def file_save_as(self, event=None) -> None:
+        self.file_dialog=filedialog.asksaveasfile( 
+                                    initialdir=self.previous_dir,
+                                    filetypes= [("plantuml",".pml"),
+                                                ("erd",".erd"),
+                                                ("text",".txt"),
+                                                ("other",".*")],
+                                    defaultextension=("text",".txt")
+                                    )
+        if self.file_dialog!= None :
+            self.filename=self.filedialog.name
+            self.previous_dir=self.filename
+            self.file_save()
+
+#-------METHOD CONVERT TEXT DIAGRAM TO IMAGE-----------------------------------------------    
+    def convert2_image(self,event=None) -> None:
+        # instantiate a KrokiEncoder instance: filepath, diagram type, image type is png
+        self.kroki_diagram = KrokiEncoder(self.filename, 
+                                        self.combobox.get(),
+                                        "png")
+        imgfile_png = re.sub(".[a-z]+$",".png",self.filename)
+
+        #write image to file
+        self.kroki_diagram.export_image(imgfile_png)
+
+        #show image in ImageWidget
+        if os.path.exists(imgfile_png):
+                self.imagewidget.update_image(imgfile_png)
+                self.message(f"Displaying {imgfile_png}")
+        
+    def convert2_image_button_func(self, event=None) -> None:
+        # instantiate a KrokiEncoder instance: filepath, diagram type, image type is png
+        self.file_save()
+        self.convert2_image()
+
+#--------METHOD SEARCH------------------------------------------------------  
+    def search_text(self, event=None) -> None:
+        if self.text.query != self.entry_search.get(): # when users change the query string while clicking the find-Next button for current query.
+            self.text.query = self.entry_search.get()
+            self.text.remove_highlight()
+        self.text.search_query()
+
+    def reset_search_text(self,event=None) -> None:
+        self.text.remove_highlight()
+        self.entry_search.delete("0","end")
+
+    def switch2_search_entry(self, event=None) -> None:
+        self.entry_search.focus_set()
+
+#-------METHODS: left/right/even_split minimizing ----------------------------------------------------------
+    def left_minimizing(self,event=None) -> None:
+        self.panwind.sash_place(0,x=5,y=100) # 5 pixels from the left and 100 pixels from top
+    
+    def right_minimizing(self,event=None) -> None:
+        self.panwind.sash_place(0,x=1195,y=100) # 1195 pixels from the left and 100 pixels from top
+    
+    def even_split(self,event=None) -> None:
+        self.panwind.sash_place(0,x=600,y=100) # 600 pixels from the left and 100 pixels from top
+
+#-------METHODS: change color ----------------------------------------------------------
+    def text_color(self,event=None) -> None:
+        choose_color=colorchooser.askcolor()
+        self.text.text_editor.configure(fg=choose_color[1])
+
+    def textblack(self,event=None) -> None:
+        self.text.text_editor.configure(fg="black")
+
+    def backgroundcolor(self,event=None) -> None:
+        choose_color=colorchooser.askcolor()
+        self.text.text_editor.configure(background=choose_color[1])
+
+    def whitebackground(self,event=None) -> None:
+        self.text.configure(background="white")
+
+    def change2_light_mode_color(self,event=None) -> None:
+        self.text.text_editor.configure(background="#FFFFFF",
+                                foreground="#000000",
+                                insertbackground="#FFFFFF")
+        self.imagewidget.image_widget.configure(background="#FFFFFF")
+        self.focus_mode_frame.configure(background="#FFFFFF")
+        self.button_focus_mode.configure(background="#FFFFFF",
+                                         foreground="#000000")
+        
+    def change2_dark_mode_color(self,event=None) -> None:
+        self.text.text_editor.configure(background="#1e1f1e",
+                                foreground="#9bd9f6",
+                                insertbackground="#FCFEFE")
+        self.imagewidget.image_widget.configure(background="#121213")
+        self.focus_mode_frame.configure(background="#1e1f1e")
+        self.button_focus_mode.configure(background="#1e1f1e",
+                                             foreground="#21a143")
+
+#--------------------METHODS: Focus Mode -------------------------------------------------------       
+    def focus_mode(self,event=None) -> None:
+        if self.convert2_img_frame.winfo_ismapped():
+            # hide the search frame
+            self.convert2_img_frame.pack_forget()
+            self.search_frame.pack_forget()
+            # change to dark mode
+            self.change2_dark_mode_color()
+        else:
+            self.convert2_img_frame.pack(before=self.panwind,
+                                         fill = 'both', 
+                                         expand = False, 
+                                         side='top')
+            self.search_frame.pack(before=self.panwind,
+                                   after=self.convert2_img_frame,
+                                    fill = 'both', 
+                                   expand = False, 
+                                   side='top')
+            self.change2_light_mode_color()
+
 #-------OTHER METHODS----------------------------------------------------------
         
     def toggle_checkButton(self,event=None) -> None:
@@ -228,9 +337,8 @@ class DiagramEditor(GuiBaseClass,
         mbox.showinfo(
             title="About PlantUML Editor",
             message="PlantUML Editor 2023\nAuthor: Anh-Minh Do\nPotsdam, Germany")
+    
 
-
-def main() -> int:
-    return 0
 if __name__ == '__main__':
-     main()
+    print("this is a module for import only")
+

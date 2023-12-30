@@ -2,7 +2,7 @@ import tkinter as tk
 import tkinter.ttk as ttk
 import tkinter.messagebox as mbox
 import sys
-from DGStatusBar import DGStatusBar
+from source.DGStatusBar import DGStatusBar
 import os
 
 

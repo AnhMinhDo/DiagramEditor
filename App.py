@@ -1,14 +1,14 @@
 import tkinter as tk
-from DiagramEditor import DiagramEditor
+from source.DiagramEditor import DiagramEditor
 import os
 import sys
 
 if __name__ == "__main__":
     root=tk.Tk()
-    root.geometry("1200x700")
-    pedit = DiagramEditor(root)
+    root.geometry("1920x1080")
+    app = DiagramEditor(root)
     root.title("PumlEditor 2023")
     if len(sys.argv) > 1:
         if os.path.exists(sys.argv[1]):
-            pedit.file_open(sys.argv[1])
-    pedit.mainLoop()
+            app.file_open(sys.argv[1])
+    app.mainLoop()
