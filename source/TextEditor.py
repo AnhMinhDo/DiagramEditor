@@ -27,7 +27,12 @@ class TextEditor():
         self._last_letter_index: None = None
         self._start_search_idx: str = "1.0"
         self._end_search_idx: str = "end"
-    
+        # create scrollbar widget
+        self.scrollbar = ttk.Scrollbar(self.frame, 
+                                       command=self.on_scroll)
+        self.scrollbar.pack(side="right", fill="y")
+        self.text_editor.config(yscrollcommand=self.scrollbar.set)
+
     def get(self,start:str, end:str) -> str:
         return self.text_editor.get(start, end)
     
@@ -71,6 +76,10 @@ class TextEditor():
                              self._last_letter_index)
             self.text_editor.tag_configure("highlight", background="yellow")
             self.text_editor.see(self._last_letter_index)
+    
+    def on_scroll(self, *args) -> None:
+        self.text_editor.yview(*args)
+
 
 if __name__ == "__main__":
     root = tk.Tk()

@@ -10,7 +10,7 @@ from source.DisplayDiagram import DisplayDiagram
 from source.TextEditor import TextEditor
 from source.KrokiEncoder import KrokiEncoder
 from tkinter import colorchooser
-
+from source.Settings import Settings
 
 class DiagramEditor(GuiBaseClass):
     def __init__(self,root):
@@ -104,15 +104,21 @@ class DiagramEditor(GuiBaseClass):
         self.panwind = tk.PanedWindow(self.frame)
         self.panwind.pack(fill="both", expand=True)
         
+        # Create frame for textWidget
+        self.text_frame = ttk.Frame(self.panwind)
+        self.text_frame.pack(fill="both", expand=True)
         # Create textWidget
-        self.text = TextEditor(self.panwind, side="left")
+        self.text = TextEditor(self.text_frame, side="left")
 
         #Create ImageWidget
         self.imagewidget = DisplayDiagram(self.panwind, "right")
 
         # Add text and imagewidget to panedwindow
-        self.panwind.add(self.text.text_editor)
+        self.panwind.add(self.text_frame)
         self.panwind.add(self.imagewidget.image_widget)
+        
+        # config the initial size of frame inside panedWindow
+        self.panwind.paneconfigure(self.text_frame, width=600)
         
         # Add image to imagewidget window
         self.imagewidget.load_image(".\data\icons\default_icon.png")
@@ -150,11 +156,11 @@ class DiagramEditor(GuiBaseClass):
         GuiBaseClass.message(self, msg="Waiting ......")
 
 #----------------instance attributes-------------------------------------------------------
-        # config file stores state of the Application
-        self.config_info = None
-        with open("F:/Python_files/DiagramEditor/DiagramEditor/source/config.yaml","r") as config_file:
-            self.config_info = yaml.safe_load(config_file)
-        self.filename = self.config_info["filename"]
+        # setting file stores state of the Application
+        self.setting_info = Settings("./setting.yaml")
+        # with open("./setting.yaml","r") as setting_file:
+        #     self.setting_info = yaml.safe_load(setting_file)
+        self.filename = self.setting_info.get_setting("filename")
         self.previous_dir = None if self.filename is None else os.path.dirname(self.filename)
         self.file_dialog = None
 
@@ -178,9 +184,9 @@ class DiagramEditor(GuiBaseClass):
         self.root.bind("<Control-k><f>", self.focus_mode)
 
 #---------METHODS: OPEN, SAVE FILE--------------------------------------------------------------------
-    def write2_config(self, event=None) -> None:
-        with open("F:/Python_files/DiagramEditor/DiagramEditor/source/config.yaml","w") as config_file:
-                yaml.safe_dump(self.config_info, config_file, sort_keys=False)
+    # def write2_setting(self, event=None) -> None:
+    #     with open("./setting.yaml","w") as setting_file:
+    #             yaml.safe_dump(self.setting_info, setting_file, sort_keys=False)
 
     def file_open(self,event=None):
         self.filename=filedialog.askopenfilename(initialdir=self.previous_dir) 
@@ -192,9 +198,9 @@ class DiagramEditor(GuiBaseClass):
             self.message(f"File {self.filename} was opened!")
             self.setAppTitle(self.filename)
             self.convert2_image()
-            self.config_info["filename"] = self.filename
+            self.setting_info.set_setting("filename" , self.filename)
             self.previous_dir= os.path.dirname(self.filename)
-            self.write2_config()
+            self.setting_info.save_settings()
 
     def file_save(self, event=None) -> None:
         if self.filename is not None:
