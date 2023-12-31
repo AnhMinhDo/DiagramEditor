@@ -1,0 +1,28 @@
+filename: null
+tem_dir: null
+dark_mode_color:
+  button_focus_mode:
+    background: '#1e1f1e'
+    foreground: '#21a143'
+  focus_mode_frame:
+    background: '#1e1f1e'
+  image_widget:
+    background: '#121213'
+  text_widget:
+    background: '#1e1f1e'
+    foreground: '#9bd9f6'
+    inserbackground: '#FCFEFE'
+default_color:
+  button_focus_mode:
+    background: '#DDE9E9'
+    foreground: '#022222'
+  focus_mode_frame:
+    background: '#DDE9E9'
+  image_widget:
+    background: '#C2CDCD'
+  text_widget:
+    background: '#DDE9E9'
+    foreground: '#022222'
+    inserbackground: '#101313'
+previous_dir: './'
+ask_when_exit: True
