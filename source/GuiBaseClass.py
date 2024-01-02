@@ -1,9 +1,9 @@
 import tkinter as tk
 import tkinter.ttk as ttk
 import tkinter.messagebox as mbox
+import os
 import sys
 from source.DGStatusBar import DGStatusBar
-import os
 
 
 class GuiBaseClass():
@@ -90,11 +90,11 @@ class GuiBaseClass():
       print("print I am your GuiBaseClass")
 
 if __name__ == '__main__':
-    root=tk.Tk()
-    bapp = GuiBaseClass(root) 
+    frame=tk.Tk()
+    bapp = GuiBaseClass(frame)
     # example for using the BaseClass in other applications
     mnu=bapp.getMenu('Edit')
-    mnu.add_command(label='Copy',command=lambda: print('Copy'))    
+    mnu.add_command(label='Copy',command=lambda: print('Copy'))  
     # example for using getFrame
     frm=bapp.getFrame()
     btn=ttk.Button(frm,text="Button X",command=lambda: sys.exit(0))

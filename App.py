@@ -1,7 +1,8 @@
-import tkinter as tk
-from source.DiagramEditor import DiagramEditor
 import os
 import sys
+import tkinter as tk
+from source.DiagramEditor import DiagramEditor
+
 
 if __name__ == "__main__":
     root=tk.Tk()

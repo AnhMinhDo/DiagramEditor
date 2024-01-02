@@ -3,19 +3,20 @@ import tkinter.ttk as ttk
 import tkinter.font as tkfont
 import logging
 
+
 class TextEditor():
     def __init__(self, frame:ttk.Frame, side:str) -> None:
         self.frame = frame
         self.side = side
-        self.text_editor = tk.Text(self.frame, 
-                                wrap="word", 
-                                undo=True, 
+        self.text_editor = tk.Text(self.frame,
+                                wrap="word",
+                                undo=True,
                                 width=50,
-                                insertofftime=500, 
+                                insertofftime=500,
                                 insertontime=500,
                                 font=("Verdana",12))
         self.text_editor.pack(side=self.side,
-                              fill="both", 
+                              fill="both",
                               expand=True)
         # Change tab to 4 spaces
         self.font = tkfont.Font(font=self.text_editor["font"])
@@ -44,21 +45,21 @@ class TextEditor():
 
     def remove_highlight(self) -> None:
         for tag in self.text_editor.tag_names(index=None):
-                self.text_editor.tag_remove(tag, "1.0", "end")
+            self.text_editor.tag_remove(tag, "1.0", "end")
         self._first_letter_index = None
         self._last_letter_index = None
         self._start_search_idx = "1.0"
         self._end_search_idx = "end"
 
-    def search_query(self,event=None) -> None:    
+    def search_query(self,event=None) -> None:  
         if self.query is None:
-            logging.warning("Query string is empty!") 
+            logging.warning("Query string is empty!")
         if self._last_letter_index is not None: # when users want to find the next occurrence.
             self._start_search_idx = self._last_letter_index
         self._first_letter_index: str = self.text_editor.search(
-                                            self.query, 
+                                            self.query,
                                             index=self._start_search_idx, 
-                                            nocase=True, 
+                                            nocase=True,
                                             stopindex=self._end_search_idx)
         if self._first_letter_index == "": # When the search reaches the end of text widget.
             for tag in self.text_editor.tag_names(index=None):
@@ -68,11 +69,11 @@ class TextEditor():
             self._start_search_idx = "1.0"
             self._end_search_idx = "end"
         else:
-            line, character = self._first_letter_index.split(sep=".", 
+            line, character = self._first_letter_index.split(sep=".",
                                                              maxsplit=1)
             self._last_letter_index = f"{line}.{int(character)+len(self.query)}"
-            self.text_editor.tag_add("highlight", 
-                             self._first_letter_index, 
+            self.text_editor.tag_add("highlight",
+                             self._first_letter_index,
                              self._last_letter_index)
             self.text_editor.tag_configure("highlight", background="yellow")
             self.text_editor.see(self._last_letter_index)

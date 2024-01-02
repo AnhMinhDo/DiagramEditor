@@ -26,9 +26,9 @@ if __name__ == "__main__":
     displayFrame = ttk.Frame(root)
     displayFrame.pack(fill = 'both', expand = True, side='top')
     app = DisplayDiagram(displayFrame, side="right")
-    imgfile_png = ".\data\icons\default_icon.png"
-    if os.path.exists(imgfile_png):
-        app.load_image(image_path=imgfile_png)
+    IMAGE_PATH = ".\data\icons\default_icon.png"
+    if os.path.exists(IMAGE_PATH):
+        app.load_image(image_path=IMAGE_PATH)
     root.mainloop()
 
 # Author: Anh-Minh Do, 01.2024, Potsdam, Germany

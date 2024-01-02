@@ -1,15 +1,15 @@
+import os 
+import sys
+import re
 import tkinter as tk
 import tkinter.ttk as ttk
 import tkinter.messagebox as mbox
-from source.GuiBaseClass import GuiBaseClass
-import os, sys
-import re
-import yaml
 import tkinter.filedialog as filedialog
+from tkinter import colorchooser
+from source.GuiBaseClass import GuiBaseClass
 from source.DisplayDiagram import DisplayDiagram
 from source.TextEditor import TextEditor
 from source.KrokiEncoder import KrokiEncoder
-from tkinter import colorchooser
 from source.Settings import Settings
 
 class DiagramEditor(GuiBaseClass):
@@ -18,16 +18,16 @@ class DiagramEditor(GuiBaseClass):
 
 #------View: menu bar--------------------------------------------------------------
         mnu_file=self.getMenu('File')      
-        mnu_file.insert_command(0,label=f"Open {'Ctrl O':>20}", 
+        mnu_file.insert_command(0,label=f"Open {'Ctrl O':>20}",
                                 underline=0,
                                 command=self.file_open)
         
-        mnu_file.insert_command(1,label=f"Save {'Ctrl S':>21}", 
-                                underline=0, 
+        mnu_file.insert_command(1,label=f"Save {'Ctrl S':>21}",
+                                underline=0,
                                 command=self.file_save)
         
-        mnu_file.insert_command(2,label="Save As   Ctrl Shift S", 
-                                underline=0, 
+        mnu_file.insert_command(2,label="Save As   Ctrl Shift S",
+                                underline=0,
                                 command=self.file_save_as)
         
         # Add options menu for changing background
@@ -37,7 +37,7 @@ class DiagramEditor(GuiBaseClass):
         menu_options.add_separator()
         # Variable to store the checkbutton state
         self.checkbutton_var = tk.BooleanVar(value=True)
-        menu_options.add_checkbutton(label='Ask when exit', 
+        menu_options.add_checkbutton(label='Ask when exit',
                                      variable=self.checkbutton_var,
                                      command=self.toggle_checkButton)
         
@@ -54,7 +54,7 @@ class DiagramEditor(GuiBaseClass):
         menu_textcolor.insert_command(1,label='Default Text Color', command=self.textblack, underline=0)
 
         # overwrite windows exit button
-        root.protocol('WM_DELETE_WINDOW', self.Exit) 
+        root.protocol('WM_DELETE_WINDOW', self.Exit)
 
 #-------View: Convert-to-Image frame-------------------------------------------------------------------------------
         # add action frame
@@ -70,10 +70,10 @@ class DiagramEditor(GuiBaseClass):
                             "NwDiag", "PacketDiag",
                             "RackDiag", "Structurizr"]
         self.combobox = ttk.Combobox(self.convert2_img_frame, 
-                                     state = 'readonly', 
+                                     state = 'readonly',
                                      values=diagram_type)
         self.combobox.pack(side = 'left', fill = 'x', expand = True)
-        self.combobox.set(diagram_type[0])       
+        self.combobox.set(diagram_type[0])  
         # add button convert2_image
         self.button_convert2_image = ttk.Button(self.convert2_img_frame, 
                                        text = "Convert to Image",
@@ -158,8 +158,6 @@ class DiagramEditor(GuiBaseClass):
 #----------------instance attributes-------------------------------------------------------
         # setting file stores state of the Application
         self.setting_info = Settings("./setting.yaml")
-        # with open("./setting.yaml","r") as setting_file:
-        #     self.setting_info = yaml.safe_load(setting_file)
         self.filename = self.setting_info.get_setting("filename")
         self.previous_dir = None if self.filename is None else os.path.dirname(self.filename)
         self.file_dialog = None
@@ -192,9 +190,10 @@ class DiagramEditor(GuiBaseClass):
         self.filename=filedialog.askopenfilename(initialdir=self.previous_dir) 
         if self.filename != "":
             self.text.delete('1.0','end')
-            file= open(self.filename,"rt")
-            for line in file:
-                self.text.insert("end",line)
+            with open(self.filename,"rt", encoding="utf-8") as file:
+                for line in file:
+                    self.text.insert("end",line)
+            
             self.message(f"File {self.filename} was opened!")
             self.setAppTitle(self.filename)
             self.convert2_image()
@@ -204,7 +203,7 @@ class DiagramEditor(GuiBaseClass):
 
     def file_save(self, event=None) -> None:
         if self.filename is not None:
-            file = open(self.filename,"w")
+            file = open(self.filename,"w", encoding="utf-8")
             file.write(self.text.get("0.0","end"))
             file.close()
             self.setAppTitle(self.filename)           
@@ -221,7 +220,7 @@ class DiagramEditor(GuiBaseClass):
                                     defaultextension=("text",".txt")
                                     )
         if self.file_dialog!= None :
-            self.filename=self.filedialog.name
+            self.filename=self.file_dialog.name
             self.previous_dir=self.filename
             self.file_save()
 
@@ -283,7 +282,7 @@ class DiagramEditor(GuiBaseClass):
         self.text.text_editor.configure(background=choose_color[1])
 
     def whitebackground(self,event=None) -> None:
-        self.text.configure(background="white")
+        self.text.text_editor.configure(background="white")
 
     def change2_light_mode_color(self,event=None) -> None:
         self.text.text_editor.configure(background="#FFFFFF",

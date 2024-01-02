@@ -71,7 +71,7 @@ class KrokiEncoder:
         Returns:
             str: an url with compressed based64 text for the text diagram
         """
-        with open(file_path, "r") as text_file:
+        with open(file_path, "r", encoding="utf-8") as text_file:
             url_based64: str = base64.urlsafe_b64encode(
                 zlib.compress(
                     text_file.read().encode('utf-8'), 9)).decode('ascii')
@@ -86,7 +86,7 @@ class KrokiEncoder:
         Returns:
             requests: response from Kroki API
         """
-        return requests.get(kroki_url)
+        return requests.get(kroki_url, timeout=5)
 
     def export_image(self, image_path: str) -> None:
         """write kroki response to file.
@@ -107,3 +107,4 @@ if __name__ == "__main__":
 
 # Author: Anh-Minh Do, 12.2023, Potsdam, Germany
 # License: MIT
+    
