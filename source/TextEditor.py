@@ -29,7 +29,7 @@ class TextEditor():
         self._start_search_idx: str = "1.0"
         self._end_search_idx: str = "end"
         # create scrollbar widget
-        self.scrollbar = ttk.Scrollbar(self.frame, 
+        self.scrollbar = ttk.Scrollbar(self.frame,
                                        command=self.on_scroll)
         self.scrollbar.pack(side="right", fill="y")
         self.text_editor.config(yscrollcommand=self.scrollbar.set)
@@ -51,7 +51,7 @@ class TextEditor():
         self._start_search_idx = "1.0"
         self._end_search_idx = "end"
 
-    def search_query(self,event=None) -> None:  
+    def search_query(self, event=None) -> None:  
         if self.query is None:
             logging.warning("Query string is empty!")
         if self._last_letter_index is not None: # when users want to find the next occurrence.

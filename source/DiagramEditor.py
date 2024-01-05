@@ -40,7 +40,7 @@ class DiagramEditor(GuiBaseClass):
         menu_options.add_checkbutton(label='Ask when exit',
                                      variable=self.checkbutton_var,
                                      command=self.toggle_checkButton)
-        
+
         #In Menu Options add changing background options
         menu_backgrounds=tk.Menu(menu_options)
         menu_options.add_cascade(menu=menu_backgrounds, label='Background', underline=0)
@@ -56,10 +56,25 @@ class DiagramEditor(GuiBaseClass):
         # overwrite windows exit button
         root.protocol('WM_DELETE_WINDOW', self.Exit)
 
+# parent Frame for both convert-to-Image frame and search frame---------------------
+        self.utilities_frame = ttk.Frame(self.frame)
+        self.utilities_frame.pack(fill = 'both',
+                                expand = False,
+                                side='top',
+                                padx=5)
 #-------View: Convert-to-Image frame-------------------------------------------------------------------------------
-        # add action frame
-        self.convert2_img_frame = ttk.Frame(self.frame)
-        self.convert2_img_frame.pack(fill = 'both', expand = False, side='top')
+        # add convert-to-Image frame
+        self.convert2_img_frame = ttk.Frame(self.utilities_frame)
+        self.convert2_img_frame.pack(fill = 'both', expand = False, side='left')
+        # add button convert2_image
+        self.text2_image_icon_path: str = "./data/icons/imaging.png"
+        self.text2_image_icon: tk.PhotoImage = tk.PhotoImage(file=self.text2_image_icon_path)
+        self.button_convert2_image = ttk.Button(self.convert2_img_frame,
+                                       text = "Convert to:  ",
+                                       image = self.text2_image_icon,
+                                       command=self.convert2_image_button_func,
+                                       compound=tk.LEFT)
+        self.button_convert2_image.pack(side = 'left', fill = 'none', expand = False)
         # add combobox to function frame
         diagram_type: list = ["plantuml","erd",
                             "graphviz", "ditaa",
@@ -69,41 +84,44 @@ class DiagramEditor(GuiBaseClass):
                             "SeqDiag", "ActDiag",
                             "NwDiag", "PacketDiag",
                             "RackDiag", "Structurizr"]
-        self.combobox = ttk.Combobox(self.convert2_img_frame, 
+        self.combobox = ttk.Combobox(self.convert2_img_frame,
                                      state = 'readonly',
-                                     values=diagram_type)
-        self.combobox.pack(side = 'left', fill = 'x', expand = True)
-        self.combobox.set(diagram_type[0])  
-        # add button convert2_image
-        self.button_convert2_image = ttk.Button(self.convert2_img_frame, 
-                                       text = "Convert to Image",
-                                       command=self.convert2_image_button_func)
-        self.button_convert2_image.pack(side = 'left', fill = 'x', expand = True)
-        
+                                     values=diagram_type,
+                                     width=15)
+        self.combobox.pack(side = 'left', fill = 'y', expand = False)
+        self.combobox.set(diagram_type[0])
 
 #------View:search frame-------------------------------------------------------------
         # add search frame
-        self.search_frame = ttk.Frame(self.frame)
-        self.search_frame.pack(fill = 'both', expand = False, side='top')
+        self.search_frame = ttk.Frame(self.utilities_frame)
+        self.search_frame.pack(fill = 'both', expand = False, side='right')
         # add entry to search frame
         self.entry_search = ttk.Entry(self.search_frame)
-        self.entry_search.pack(side = 'left', fill = 'x', expand = True)
+        self.entry_search.pack(side = 'left', fill = 'both', expand = True)
         # add button search to search frame
-        self.button_search = ttk.Button(self.search_frame, 
+        self.search_icon_path: str = "./data/icons/search.png"
+        self.search_icon: tk.PhotoImage = tk.PhotoImage(file=self.search_icon_path)
+        self.button_search = ttk.Button(self.search_frame,
                                        text = "Find Next",
+                                       image=self.search_icon,
+                                       compound=tk.LEFT,
                                        command=self.search_text)
-        self.button_search.pack(side = 'left', fill = 'x', expand = True)
+        self.button_search.pack(side = 'left', fill = 'both', expand = True)
         # add button reset to search frame
-        self.button_reset = ttk.Button(self.search_frame, 
-                                       text = "Reset Search",
+        self.reset_icon_path: str = "./data/icons/broom.png"
+        self.reset_icon: tk.PhotoImage = tk.PhotoImage(file=self.reset_icon_path)
+        self.button_reset = ttk.Button(self.search_frame,
+                                       text="Clear Search",
+                                       image=self.reset_icon,
+                                       compound=tk.LEFT,
                                        command=self.reset_search_text)
-        self.button_reset.pack(side = 'right', fill = 'x', expand = True)
-        
+        self.button_reset.pack(side = 'left', fill = 'both', expand = True)
+
 #------View: text widget and display Image frame-----------------------------
         # Create panedwindow
         self.panwind = tk.PanedWindow(self.frame)
         self.panwind.pack(fill="both", expand=True)
-        
+
         # Create frame for textWidget
         self.text_frame = ttk.Frame(self.panwind)
         self.text_frame.pack(fill="both", expand=True)
@@ -116,32 +134,38 @@ class DiagramEditor(GuiBaseClass):
         # Add text and imagewidget to panedwindow
         self.panwind.add(self.text_frame)
         self.panwind.add(self.imagewidget.image_widget)
-        
+   
         # config the initial size of frame inside panedWindow
         self.panwind.paneconfigure(self.text_frame, width=600)
-        
+     
         # Add image to imagewidget window
-        self.imagewidget.load_image(".\data\icons\default_icon.png")
+        self.imagewidget.load_image("./data/icons/diagram.png")
 
 #-------------------View: Focus Mode Frame------------------------------------------------------        
         # add focus_mode frame
         self.focus_mode_frame = tk.Frame(self.frame)
         self.focus_mode_frame.pack(fill = 'both', expand = False, side='top')
         # add button left_minimizing to focus_mode frame
-        self.button_left_minimizing = ttk.Button(self.focus_mode_frame, 
-                                       text = "<-- left",
+        self.left_arrow_icon_path: str = "./data/icons/left-arrow.png"
+        self.left_arrow_icon: tk.PhotoImage = tk.PhotoImage(file=self.left_arrow_icon_path)
+        self.button_left_minimizing = ttk.Button(self.focus_mode_frame,
+                                       image=self.left_arrow_icon,
                                        command=self.left_minimizing)
-        self.button_left_minimizing.pack(side = 'left', fill = 'x', expand = True)
+        self.button_left_minimizing.pack(side = 'left', fill = 'x', expand = False)
         # add button even_split to focus_mode frame
-        self.button_even_split = ttk.Button(self.focus_mode_frame, 
-                                       text = "| Split |",
+        self.split_icon_path: str = "./data/icons/split.png"
+        self.split_icon: tk.PhotoImage = tk.PhotoImage(file=self.split_icon_path)
+        self.button_even_split = ttk.Button(self.focus_mode_frame,
+                                       image=self.split_icon,
                                        command=self.even_split)
-        self.button_even_split.pack(side = 'left', fill = 'x', expand = True)
+        self.button_even_split.pack(side = 'left', fill = 'x', expand = False)
         # add button right_minimizing to focus_mode_frame
-        self.button_right_minimizing = ttk.Button(self.focus_mode_frame, 
-                                       text = "Right -->",
+        self.right_arrow_icon_path: str = "./data/icons/right-arrow.png"
+        self.right_arrow_icon: tk.PhotoImage = tk.PhotoImage(file=self.right_arrow_icon_path)
+        self.button_right_minimizing = ttk.Button(self.focus_mode_frame,
+                                       image=self.right_arrow_icon,
                                        command=self.right_minimizing)
-        self.button_right_minimizing.pack(side = 'left', fill = 'x', expand = True)
+        self.button_right_minimizing.pack(side = 'left', fill = 'x', expand = False)
 
         
         # add button focus_mode to focus_mode_frame
@@ -157,8 +181,8 @@ class DiagramEditor(GuiBaseClass):
 
 #----------------instance attributes-------------------------------------------------------
         # setting file stores state of the Application
-        self.setting_info = Settings("./setting.yaml")
-        self.filename = self.setting_info.get_setting("filename")
+        self.setting_info: Settings = Settings("./setting.yaml")
+        self.filename: str = self.setting_info.get_setting("filename")
         self.previous_dir = None if self.filename is None else os.path.dirname(self.filename)
         self.file_dialog = None
 
@@ -182,18 +206,14 @@ class DiagramEditor(GuiBaseClass):
         self.root.bind("<Control-k><f>", self.focus_mode)
 
 #---------METHODS: OPEN, SAVE FILE--------------------------------------------------------------------
-    # def write2_setting(self, event=None) -> None:
-    #     with open("./setting.yaml","w") as setting_file:
-    #             yaml.safe_dump(self.setting_info, setting_file, sort_keys=False)
-
     def file_open(self,event=None):
-        self.filename=filedialog.askopenfilename(initialdir=self.previous_dir) 
+        self.filename=filedialog.askopenfilename(initialdir=self.previous_dir)
         if self.filename != "":
             self.text.delete('1.0','end')
             with open(self.filename,"rt", encoding="utf-8") as file:
                 for line in file:
                     self.text.insert("end",line)
-            
+          
             self.message(f"File {self.filename} was opened!")
             self.setAppTitle(self.filename)
             self.convert2_image()
@@ -206,7 +226,7 @@ class DiagramEditor(GuiBaseClass):
             file = open(self.filename,"w", encoding="utf-8")
             file.write(self.text.get("0.0","end"))
             file.close()
-            self.setAppTitle(self.filename)           
+            self.setAppTitle(self.filename)      
         else :
             self.file_save_as()
 
@@ -227,7 +247,7 @@ class DiagramEditor(GuiBaseClass):
 #-------METHOD CONVERT TEXT DIAGRAM TO IMAGE-----------------------------------------------    
     def convert2_image(self,event=None) -> None:
         # instantiate a KrokiEncoder instance: filepath, diagram type, image type is png
-        self.kroki_diagram = KrokiEncoder(self.filename, 
+        self.kroki_diagram = KrokiEncoder(self.filename,
                                         self.combobox.get(),
                                         "png")
         imgfile_png = re.sub(".[a-z]+$",".png",self.filename)
@@ -239,13 +259,13 @@ class DiagramEditor(GuiBaseClass):
         if os.path.exists(imgfile_png):
                 self.imagewidget.update_image(imgfile_png)
                 self.message(f"Displaying {imgfile_png}")
-        
+
     def convert2_image_button_func(self, event=None) -> None:
         # instantiate a KrokiEncoder instance: filepath, diagram type, image type is png
         self.file_save()
         self.convert2_image()
 
-#--------METHOD SEARCH------------------------------------------------------  
+#--------METHOD SEARCH------------------------------------------------------
     def search_text(self, event=None) -> None:
         if self.text.query != self.entry_search.get(): # when users change the query string while clicking the find-Next button for current query.
             self.text.query = self.entry_search.get()
@@ -259,13 +279,13 @@ class DiagramEditor(GuiBaseClass):
     def switch2_search_entry(self, event=None) -> None:
         self.entry_search.focus_set()
 
-#-------METHODS: left/right/even_split minimizing ----------------------------------------------------------
+#-------METHODS: left/right/even_split minimizing -------------------------------------------------
     def left_minimizing(self,event=None) -> None:
         self.panwind.sash_place(0,x=5,y=100) # 5 pixels from the left and 100 pixels from top
-    
+
     def right_minimizing(self,event=None) -> None:
         self.panwind.sash_place(0,x=1195,y=100) # 1195 pixels from the left and 100 pixels from top
-    
+
     def even_split(self,event=None) -> None:
         self.panwind.sash_place(0,x=600,y=100) # 600 pixels from the left and 100 pixels from top
 
@@ -292,7 +312,7 @@ class DiagramEditor(GuiBaseClass):
         self.focus_mode_frame.configure(background="#FFFFFF")
         self.button_focus_mode.configure(background="#FFFFFF",
                                          foreground="#000000")
-        
+
     def change2_dark_mode_color(self,event=None) -> None:
         self.text.text_editor.configure(background="#1e1f1e",
                                 foreground="#9bd9f6",
@@ -323,16 +343,16 @@ class DiagramEditor(GuiBaseClass):
             self.change2_light_mode_color()
 
 #-------OTHER METHODS----------------------------------------------------------
-        
+
     def toggle_checkButton(self,event=None) -> None:
         self.checkbutton_var = not self.checkbutton_var
-    
+
     def Exit(self,event=None):
         if self.checkbutton_var:
             self.ask_exit()
         else:
             sys.exit(0)
-      
+
     def ask_exit(self) -> None:
         answer = mbox.askyesno(title="Close Application",message="Do you want to quit the application?")
         if answer is True:
@@ -342,8 +362,7 @@ class DiagramEditor(GuiBaseClass):
         mbox.showinfo(
             title="About PlantUML Editor",
             message="PlantUML Editor 2023\nAuthor: Anh-Minh Do\nPotsdam, Germany")
-    
+
 
 if __name__ == '__main__':
     print("this is a module for import only")
-
