@@ -28,18 +28,19 @@ class TextEditor():
         self._last_letter_index: None = None
         self._start_search_idx: str = "1.0"
         self._end_search_idx: str = "end"
-        # create scrollbar widget
-        self.scrollbar = ttk.Scrollbar(self.frame,
-                                       command=self.on_scroll)
-        self.scrollbar.pack(side="right", fill="y")
-        self.text_editor.config(yscrollcommand=self.scrollbar.set)
+        # create scrollbar widgets
+        self.scrollbar_vertical = ttk.Scrollbar(self.frame,
+                                       command=self.vertical_scroll,
+                                       orient=tk.VERTICAL)
+        self.scrollbar_vertical.pack(side='right', fill='y')
+        self.text_editor.config(yscrollcommand=self.scrollbar_vertical.set)
 
     def get(self,start:str, end:str) -> str:
         return self.text_editor.get(start, end)
-    
+
     def delete(self, start, end) -> None:
         self.text_editor.delete(start, end)
-    
+
     def insert(self, start: str, insert_string: str) -> None:
         self.text_editor.insert(start, insert_string)
 
@@ -78,9 +79,8 @@ class TextEditor():
             self.text_editor.tag_configure("highlight", background="yellow")
             self.text_editor.see(self._last_letter_index)
     
-    def on_scroll(self, *args) -> None:
+    def vertical_scroll(self, *args) -> None:
         self.text_editor.yview(*args)
-
 
 if __name__ == "__main__":
     root = tk.Tk()
@@ -88,7 +88,7 @@ if __name__ == "__main__":
     root.geometry("800x600")
     text_frame = ttk.Frame(root)
     text_frame.pack(fill = 'both', expand = True, side='top')
-    app = TextEditor(text_frame, side="right")
+    app = TextEditor(text_frame, side="left")
     root.mainloop()
 
 # Author: Anh-Minh Do, 01.2024, Potsdam, Germany

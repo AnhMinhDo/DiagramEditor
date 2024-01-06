@@ -5,6 +5,7 @@ import tkinter as tk
 import tkinter.ttk as ttk
 import tkinter.messagebox as mbox
 import tkinter.filedialog as filedialog
+from ttkthemes import ThemedTk
 from tkinter import colorchooser
 from source.GuiBaseClass import GuiBaseClass
 from source.DisplayDiagram import DisplayDiagram
@@ -169,8 +170,12 @@ class DiagramEditor(GuiBaseClass):
 
         
         # add button focus_mode to focus_mode_frame
-        self.button_focus_mode = ttk.Button(self.focus_mode_frame, 
+        self.focus_mode_icon_path: str = "./data/icons/levitation.png"
+        self.focus_mode_icon: tk.PhotoImage = tk.PhotoImage(file=self.focus_mode_icon_path)
+        self.button_focus_mode = ttk.Button(self.focus_mode_frame,
                                        text = "Focus Mode",
+                                       image=self.focus_mode_icon,
+                                       compound=tk.LEFT,
                                        command=self.focus_mode)
         self.button_focus_mode.pack(side = 'right', fill = 'x', expand = False)
 
@@ -210,7 +215,7 @@ class DiagramEditor(GuiBaseClass):
         self.filename=filedialog.askopenfilename(initialdir=self.previous_dir)
         if self.filename != "":
             self.text.delete('1.0','end')
-            with open(self.filename,"rt", encoding="utf-8") as file:
+            with open(self.filename,"rt") as file:
                 for line in file:
                     self.text.insert("end",line)
           
@@ -280,14 +285,19 @@ class DiagramEditor(GuiBaseClass):
         self.entry_search.focus_set()
 
 #-------METHODS: left/right/even_split minimizing -------------------------------------------------
+    def get_win_width(self, event=None) -> int:
+        return self.frame.winfo_width()
+  
     def left_minimizing(self,event=None) -> None:
         self.panwind.sash_place(0,x=5,y=100) # 5 pixels from the left and 100 pixels from top
 
     def right_minimizing(self,event=None) -> None:
-        self.panwind.sash_place(0,x=1195,y=100) # 1195 pixels from the left and 100 pixels from top
+        sash_x: int = int(self.get_win_width() - 5)
+        self.panwind.sash_place(0,x=sash_x,y=100) 
 
     def even_split(self,event=None) -> None:
-        self.panwind.sash_place(0,x=600,y=100) # 600 pixels from the left and 100 pixels from top
+        sash_x: int = int(self.get_win_width() / 2)
+        self.panwind.sash_place(0,x=sash_x,y=100)
 
 #-------METHODS: change color ----------------------------------------------------------
     def text_color(self,event=None) -> None:
@@ -305,40 +315,22 @@ class DiagramEditor(GuiBaseClass):
         self.text.text_editor.configure(background="white")
 
     def change2_light_mode_color(self,event=None) -> None:
-        self.text.text_editor.configure(background="#FFFFFF",
-                                foreground="#000000",
-                                insertbackground="#FFFFFF")
-        self.imagewidget.image_widget.configure(background="#FFFFFF")
-        self.focus_mode_frame.configure(background="#FFFFFF")
-        self.button_focus_mode.configure(background="#FFFFFF",
-                                         foreground="#000000")
+        pass
 
     def change2_dark_mode_color(self,event=None) -> None:
-        self.text.text_editor.configure(background="#1e1f1e",
-                                foreground="#9bd9f6",
-                                insertbackground="#FCFEFE")
-        self.imagewidget.image_widget.configure(background="#121213")
-        self.focus_mode_frame.configure(background="#1e1f1e")
-        self.button_focus_mode.configure(background="#1e1f1e",
-                                             foreground="#21a143")
+        pass
 
 #--------------------METHODS: Focus Mode -------------------------------------------------------       
     def focus_mode(self,event=None) -> None:
         if self.convert2_img_frame.winfo_ismapped():
             # hide the search frame
-            self.convert2_img_frame.pack_forget()
-            self.search_frame.pack_forget()
+            self.utilities_frame.pack_forget()
             # change to dark mode
             self.change2_dark_mode_color()
         else:
-            self.convert2_img_frame.pack(before=self.panwind,
-                                         fill = 'both', 
-                                         expand = False, 
-                                         side='top')
-            self.search_frame.pack(before=self.panwind,
-                                   after=self.convert2_img_frame,
-                                    fill = 'both', 
-                                   expand = False, 
+            self.utilities_frame.pack(before=self.panwind,
+                                    fill = 'both',
+                                   expand = False,
                                    side='top')
             self.change2_light_mode_color()
 
