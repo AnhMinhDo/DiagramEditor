@@ -8,14 +8,16 @@ class KrokiEncoder:
                  file_path,
                  diagram_type,
                  output_img_extension) -> None:
-        self._file_path = file_path
-        self._extension = output_img_extension
-        self._diagram_type = diagram_type
-        self._kroki_url = self._text_diagram_to_kroki_url(
+        self._file_path: str = file_path
+        self._extension: str = output_img_extension
+        self._diagram_type: str = diagram_type
+        self._kroki_url: str = self._text_diagram_to_kroki_url(
             self.file_path,
             self.diagram_type,
             self.extension)
-        self._response = self._send_get_request(self._kroki_url)
+        self._response: requests.Response = self._send_get_request(self._kroki_url)
+        self.status_code: int = self._response.status_code
+        self.error_message = self._get_error(self._response, self.status_code)
 
     @property
     def file_path(self) -> str:
@@ -29,6 +31,8 @@ class KrokiEncoder:
             self.diagram_type,
             self.extension)
         self._response = self._send_get_request(self._kroki_url)
+        self.status_code = self._response.status_code
+        self.error_message = self._get_error(self._response, self.status_code)
 
     @property
     def extension(self) -> str:
@@ -42,6 +46,8 @@ class KrokiEncoder:
             self.diagram_type,
             self.extension)
         self._response = self._send_get_request(self._kroki_url)
+        self.status_code = self._response.status_code
+        self.error_message = self._get_error(self._response, self.status_code)
 
     @property
     def diagram_type(self) -> str:
@@ -55,6 +61,8 @@ class KrokiEncoder:
             self.diagram_type,
             self.extension)
         self._response = self._send_get_request(self._kroki_url)
+        self.status_code = self._response.status_code
+        self.error_message = self._get_error(self._response, self.status_code)
 
     def _text_diagram_to_kroki_url(
             self,
@@ -77,16 +85,27 @@ class KrokiEncoder:
                     text_file.read().encode('utf-8'), 9)).decode('ascii')
         return f"https://kroki.io/{diagram_type}/{extension}/{url_based64}"
 
-    def _send_get_request(self, kroki_url: str) -> requests:
+    def _send_get_request(self, kroki_url: str) -> requests.Response:
         """send GET requests to kroki API
 
         Args:
             kroki_url (str): kroki URL contains diagram type, expected image extension, based64 text string
 
         Returns:
-            requests: response from Kroki API
+            requests.Response: response from Kroki API
         """
         return requests.get(kroki_url, timeout=5)
+
+    def _get_error(self, res: requests.Response, status_code: int) -> None | str:
+        if status_code == 400:
+            return res.content.decode()
+        elif len(res.content) == 0:
+            return "Error: Https Response content is Empty. Please re-check diagram type"
+        else:
+            return None
+
+    def _is_response_body_empty(self, res: requests.Response) -> bool:
+        return True if len(res.content) == 0 else False
 
     def export_image(self, image_path: str) -> None:
         """write kroki response to file.
@@ -94,8 +113,11 @@ class KrokiEncoder:
         Args:
             image_path (str): path to image file which will be written in.
         """
-        with open(image_path, "wb") as image_file:
-            image_file.write(self._response.content)
+        if self.error_message is None:
+            with open(image_path, "wb") as image_file:
+                image_file.write(self._response.content)
+        else:
+            print(self.error_message)
 
 
 def main() -> int:

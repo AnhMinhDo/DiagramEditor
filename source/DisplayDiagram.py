@@ -17,7 +17,14 @@ class DisplayDiagram():
         self.image_widget.configure(image=self.image)
 
     def update_image(self, image_path:str) -> None:
-        self.image.configure(file=image_path)
+        if self.image_widget.cget("image") == '':
+            self.load_image(image_path=image_path)
+        else:
+            self.image.configure(file=image_path)
+    
+    def display_text(self, message: str) -> None:
+        self.image_widget.configure(image='')
+        self.image_widget.configure(text=message)
 
 if __name__ == "__main__":
     root = tk.Tk()

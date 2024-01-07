@@ -5,7 +5,6 @@ import tkinter as tk
 import tkinter.ttk as ttk
 import tkinter.messagebox as mbox
 import tkinter.filedialog as filedialog
-from ttkthemes import ThemedTk
 from tkinter import colorchooser
 from source.GuiBaseClass import GuiBaseClass
 from source.DisplayDiagram import DisplayDiagram
@@ -77,7 +76,7 @@ class DiagramEditor(GuiBaseClass):
                                        compound=tk.LEFT)
         self.button_convert2_image.pack(side = 'left', fill = 'none', expand = False)
         # add combobox to function frame
-        diagram_type: list = ["plantuml","erd",
+        self.diagram_type_list: list = ["plantuml","erd",
                             "graphviz", "ditaa",
                             "mermaid", "TikZ",
                             "Vega", "wireviz",
@@ -87,10 +86,10 @@ class DiagramEditor(GuiBaseClass):
                             "RackDiag", "Structurizr"]
         self.combobox = ttk.Combobox(self.convert2_img_frame,
                                      state = 'readonly',
-                                     values=diagram_type,
+                                     values=self.diagram_type_list,
                                      width=15)
         self.combobox.pack(side = 'left', fill = 'y', expand = False)
-        self.combobox.set(diagram_type[0])
+        self.combobox.set(self.diagram_type_list[0])
 
 #------View:search frame-------------------------------------------------------------
         # add search frame
@@ -168,7 +167,6 @@ class DiagramEditor(GuiBaseClass):
                                        command=self.right_minimizing)
         self.button_right_minimizing.pack(side = 'left', fill = 'x', expand = False)
 
-        
         # add button focus_mode to focus_mode_frame
         self.focus_mode_icon_path: str = "./data/icons/levitation.png"
         self.focus_mode_icon: tk.PhotoImage = tk.PhotoImage(file=self.focus_mode_icon_path)
@@ -210,6 +208,9 @@ class DiagramEditor(GuiBaseClass):
         # Turn on focus mode
         self.root.bind("<Control-k><f>", self.focus_mode)
 
+#---------Open previous saved working state---------------------------------------------
+        self.open_previous_file()
+
 #---------METHODS: OPEN, SAVE FILE--------------------------------------------------------------------
     def file_open(self,event=None):
         self.filename=filedialog.askopenfilename(initialdir=self.previous_dir)
@@ -218,11 +219,11 @@ class DiagramEditor(GuiBaseClass):
             with open(self.filename,"rt") as file:
                 for line in file:
                     self.text.insert("end",line)
-          
             self.message(f"File {self.filename} was opened!")
             self.setAppTitle(self.filename)
             self.convert2_image()
             self.setting_info.set_setting("filename" , self.filename)
+            self.setting_info.set_setting("diagram_type" , self.combobox.get())
             self.previous_dir= os.path.dirname(self.filename)
             self.setting_info.save_settings()
 
@@ -249,21 +250,35 @@ class DiagramEditor(GuiBaseClass):
             self.previous_dir=self.filename
             self.file_save()
 
+    def open_previous_file(self) -> None:
+        if self.filename != "":
+            self.saved_dia_type: str = self.setting_info.get_setting("diagram_type")
+            self.combobox.set(self.diagram_type_list[self.diagram_type_list.index(self.saved_dia_type)])
+            self.text.delete('1.0','end')
+            with open(self.filename,"rt") as file:
+                for line in file:
+                    self.text.insert("end",line)
+            self.message(f"File {self.filename} was opened!")
+            self.setAppTitle(self.filename)
+            self.convert2_image()
+
 #-------METHOD CONVERT TEXT DIAGRAM TO IMAGE-----------------------------------------------    
     def convert2_image(self,event=None) -> None:
         # instantiate a KrokiEncoder instance: filepath, diagram type, image type is png
         self.kroki_diagram = KrokiEncoder(self.filename,
-                                        self.combobox.get(),
+                                        self.combobox.get().lower(),
                                         "png")
         imgfile_png = re.sub(".[a-z]+$",".png",self.filename)
-
-        #write image to file
-        self.kroki_diagram.export_image(imgfile_png)
-
-        #show image in ImageWidget
-        if os.path.exists(imgfile_png):
-                self.imagewidget.update_image(imgfile_png)
-                self.message(f"Displaying {imgfile_png}")
+        self.setting_info.set_setting("diagram_type", self.combobox.get())
+        if self.kroki_diagram.error_message is None:
+            #write image to file
+            self.kroki_diagram.export_image(imgfile_png)
+            #show image in ImageWidget
+            if os.path.exists(imgfile_png):
+                    self.imagewidget.update_image(imgfile_png)
+                    self.message(f"Displaying {imgfile_png}")
+        else:
+            self.imagewidget.display_text(self.kroki_diagram.error_message)
 
     def convert2_image_button_func(self, event=None) -> None:
         # instantiate a KrokiEncoder instance: filepath, diagram type, image type is png

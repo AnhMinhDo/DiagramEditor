@@ -26,3 +26,4 @@ default_color:
     inserbackground: '#101313'
 previous_dir: './'
 ask_when_exit: True
+diagram_type: null
