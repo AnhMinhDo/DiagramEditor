@@ -1,4 +1,4 @@
-filename: F:/Python_files/DiagramEditor/DiagramEditor/source/data/mermaid_diagram.txt
+filename: F:/Python_files/DiagramEditor/DiagramEditor/source/data/dia_text.txt
 tem_dir: null
 dark_mode_color:
   button_focus_mode:
@@ -26,4 +26,4 @@ default_color:
     inserbackground: '#101313'
 previous_dir: F:/Python_files/DiagramEditor/DiagramEditor/source/data
 ask_when_exit: true
-diagram_type: mermaid
+diagram_type: plantuml
