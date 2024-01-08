@@ -100,7 +100,7 @@ class KrokiEncoder:
         if status_code == 400:
             return res.content.decode()
         elif len(res.content) == 0:
-            return "Error: Https Response content is Empty. Please re-check diagram type"
+            return "Error: HTTP response content is empty. Please re-check diagram type"
         else:
             return None
 

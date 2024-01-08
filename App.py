@@ -1,7 +1,7 @@
 import os
 import sys
 import tkinter as tk
-from source.DiagramEditor import DiagramEditor
+from source.diagram_editor import DiagramEditor
 
 
 if __name__ == "__main__":

@@ -6,11 +6,11 @@ import tkinter.ttk as ttk
 import tkinter.messagebox as mbox
 import tkinter.filedialog as filedialog
 from tkinter import colorchooser
-from source.GuiBaseClass import GuiBaseClass
-from source.DisplayDiagram import DisplayDiagram
-from source.TextEditor import TextEditor
-from source.KrokiEncoder import KrokiEncoder
-from source.Settings import Settings
+from source.gui_base_class import GuiBaseClass
+from source.display_diagram import DisplayDiagram
+from source.text_editor import TextEditor
+from source.kroki_encoder import KrokiEncoder
+from source.settings import Settings
 
 class DiagramEditor(GuiBaseClass):
     def __init__(self,root):

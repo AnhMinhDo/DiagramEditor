@@ -39,4 +39,3 @@ if __name__ == "__main__":
 
 # Author: Anh-Minh Do, 01.2024, Potsdam, Germany
 # License: MIT
-    
