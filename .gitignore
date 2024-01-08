@@ -164,4 +164,4 @@ source/data/
 
 # config file
 config.yaml
-setting.yaml
+./setting.yaml
