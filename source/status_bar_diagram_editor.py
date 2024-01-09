@@ -45,8 +45,9 @@ class StatusBarDiaEdit(ttk.Frame):
         # create progess bar
         self.pb = ttk.Progressbar(self,
             length=60,mode='determinate')
-        self.pb.configure(value=30)
+        self.pb.configure(value=100)
         self.pb.pack(side='right',padx=4,pady=2)
+
 
     def set(self, format, *args):
       self.notification.config(text=format % args)

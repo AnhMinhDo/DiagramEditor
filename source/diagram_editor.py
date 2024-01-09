@@ -211,7 +211,7 @@ class DiagramEditor(GuiBaseClass):
         # Turn on focus mode
         self.root.bind("<Control-k><f>", self.focus_mode)
         # Update cursor position
-        self.text.text_editor.bind("<Button>", self.update_cursor_position)
+        self.text.text_editor.bind("<ButtonRelease-1>", self.update_cursor_position)
         self.text.text_editor.bind("<KeyRelease>", self.update_cursor_position)
 
         

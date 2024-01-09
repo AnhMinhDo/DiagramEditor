@@ -99,6 +99,8 @@ class KrokiEncoder:
             return res
         except requests.exceptions.ConnectionError:
             return None
+        except requests.exceptions.RequestException as e:
+            return None
             
     def _get_status_code(self, res: requests.Response) -> int | None:
         if res is None:
