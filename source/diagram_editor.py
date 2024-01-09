@@ -123,21 +123,18 @@ class DiagramEditor(GuiBaseClass):
         self.panwind = tk.PanedWindow(self.frame)
         self.panwind.pack(fill="both", expand=True,padx=4)
 
-        # Create frame for textWidget
-        self.text_frame = ttk.Frame(self.panwind)
-        self.text_frame.pack(fill="both", expand=True)
         # Create textWidget
-        self.text = TextEditor(self.text_frame, side="left")
+        self.text = TextEditor(self.panwind)
 
         #Create ImageWidget
         self.imagewidget = DisplayDiagram(self.panwind, "right")
 
         # Add text and imagewidget to panedwindow
-        self.panwind.add(self.text_frame)
+        self.panwind.add(self.text)
         self.panwind.add(self.imagewidget.image_widget)
    
         # config the initial size of frame inside panedWindow
-        self.panwind.paneconfigure(self.text_frame, width=600)
+        self.panwind.paneconfigure(self.text, width=600)
      
         # Add image to imagewidget window
         self.imagewidget.load_image("./data/icons/diagram.png")
@@ -211,17 +208,17 @@ class DiagramEditor(GuiBaseClass):
         # Turn on focus mode
         self.root.bind("<Control-k><f>", self.focus_mode)
         # Update cursor position
-        self.text.text_editor.bind("<ButtonRelease-1>", self.update_cursor_position)
-        self.text.text_editor.bind("<KeyRelease>", self.update_cursor_position)
+        self.text.bind_event("<ButtonRelease-1>", self.update_cursor_position)
+        self.text.bind_event("<KeyRelease>", self.update_cursor_position)
 
         
 #---------Open previous saved working state---------------------------------------------
         # self.open_previous_file()
         self.open_previous_file()
-#---------Recurrent tasks---------------------------------------------------------
-        # self.connection_status()
-        self.root.after(5000, self.connection_status)
 
+#---------Recurrent tasks---------------------------------------------------------
+        # self.root.after(5000, self.connection_status)
+        self.connection_status()
 #---------METHODS: OPEN, SAVE FILE--------------------------------------------------------------------
     def file_open(self,event=None):
         self.filename=filedialog.askopenfilename(initialdir=self.previous_dir)
@@ -328,17 +325,17 @@ class DiagramEditor(GuiBaseClass):
 #-------METHODS: change color ----------------------------------------------------------
     def text_color(self,event=None) -> None:
         choose_color=colorchooser.askcolor()
-        self.text.text_editor.configure(fg=choose_color[1])
+        self.text.config_text_editor(fg=choose_color[1])
 
     def textblack(self,event=None) -> None:
-        self.text.text_editor.configure(fg="black")
+        self.text.config_text_editor(fg="black")
 
     def backgroundcolor(self,event=None) -> None:
         choose_color=colorchooser.askcolor()
-        self.text.text_editor.configure(background=choose_color[1])
+        self.text.config_text_editor(background=choose_color[1])
 
     def whitebackground(self,event=None) -> None:
-        self.text.text_editor.configure(background="white")
+        self.text.config_text_editor(background="white")
 
     def change2_light_mode_color(self,event=None) -> None:
         pass
@@ -362,12 +359,12 @@ class DiagramEditor(GuiBaseClass):
 
 #-------METHODS: statusbar----------------------------------------------------
     def update_cursor_position(self, event=None) -> None:
-        self.stbar.update_ln_col(self.text.text_editor.index("insert"))
-    
+        self.stbar.update_ln_col(self.text.index("insert"))
+        self.root.update_idletasks()
+
     def connection_status(self) -> None:
         self.stbar.update_internet_status()
-        
-
+        self.root.after(5000, self.connection_status)
 #-------OTHER METHODS----------------------------------------------------------
 
     def toggle_checkButton(self,event=None) -> None:

@@ -66,15 +66,18 @@ class StatusBarDiaEdit(ttk.Frame):
         self.cursor_line = line
         self.cursor_col = col
         self.cursor_line_col.config(text=f'Line {self.cursor_line}, Col {self.cursor_col}')
+        self.master_frame.update_idletasks()
 
     def update_internet_status(self) -> None:
         try:
            requests.get("https://www.google.com", timeout=5)
            self.internet_status.config(text="On",
                                        image=self.wifi_on_icon)
+           self.master_frame.update_idletasks()
         except requests.ConnectionError:
            self.internet_status.config(text="Off",
                                        image=self.wifi_off_icon)
+           self.master_frame.update_idletasks()
     
 
 if __name__ == "__main__":
