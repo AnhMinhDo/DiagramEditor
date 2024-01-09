@@ -121,7 +121,7 @@ class DiagramEditor(GuiBaseClass):
 #------View: text widget and display Image frame-----------------------------
         # Create panedwindow
         self.panwind = tk.PanedWindow(self.frame)
-        self.panwind.pack(fill="both", expand=True)
+        self.panwind.pack(fill="both", expand=True,padx=4)
 
         # Create frame for textWidget
         self.text_frame = ttk.Frame(self.panwind)
@@ -183,7 +183,7 @@ class DiagramEditor(GuiBaseClass):
         self.stbar = StatusBarDiaEdit(self.frame)
         self.stbar.pack(side="bottom", fill="x")
         self.stbar.set(format="Waiting ......")
-        self.connection_status()
+        
 
 #----------------instance attributes-------------------------------------------------------
         # setting file stores state of the Application
@@ -216,7 +216,11 @@ class DiagramEditor(GuiBaseClass):
 
         
 #---------Open previous saved working state---------------------------------------------
+        # self.open_previous_file()
         self.open_previous_file()
+#---------Recurrent tasks---------------------------------------------------------
+        # self.connection_status()
+        self.root.after(5000, self.connection_status)
 
 #---------METHODS: OPEN, SAVE FILE--------------------------------------------------------------------
     def file_open(self,event=None):
@@ -362,7 +366,8 @@ class DiagramEditor(GuiBaseClass):
     
     def connection_status(self) -> None:
         self.stbar.update_internet_status()
-        self.root.after(5000, self.connection_status)
+        
+
 #-------OTHER METHODS----------------------------------------------------------
 
     def toggle_checkButton(self,event=None) -> None:
