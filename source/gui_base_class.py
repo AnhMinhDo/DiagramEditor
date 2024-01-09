@@ -23,21 +23,6 @@ class GuiBaseClass():
       menu_help.add_command(label='About', command=self.About,underline=0)       
       root.config(menu=self.menubar)
 
-      #status bar
-      self.status=DGStatusBar(self.root)
-      self.status.pack(side="bottom", fill="x")
-      self.status.update()
-      # self.status.set("Connecting...")
-      # self.status.progress(25)
-      # self.status.after(1000)
-      # self.status.set("Connected, logging in...")
-      # self.status.progress(50)
-      # root.after(1000)
-      # self.status.set("Login accepted...")
-      # self.status.progress(75)
-      # self.status.after(1000)
-      self.status.progress(100)
-      self.status.clear()
 
       # ....
       self.menu['menubar'] = self.menubar
@@ -50,17 +35,9 @@ class GuiBaseClass():
     self.basename = os.path.basename(filepath)
     self.root.title(self.basename)
   
-  def statusbar(self):
-    self.status.pack (fill="x", expand=False)
-    self.status.set ("This is the status bar")
-  
   def message(self, msg):
     self.status.set(msg)
 
-  def progress(self, p):
-    self.status.set(p)
-  
-  
 
   # public functions
   def mainLoop(self):

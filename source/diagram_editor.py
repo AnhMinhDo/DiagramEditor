@@ -11,6 +11,7 @@ from source.display_diagram import DisplayDiagram
 from source.text_editor import TextEditor
 from source.kroki_encoder import KrokiEncoder
 from source.settings import Settings
+from source.status_bar_diagram_editor import StatusBarDiaEdit
 
 class DiagramEditor(GuiBaseClass):
     def __init__(self,root):
@@ -175,12 +176,14 @@ class DiagramEditor(GuiBaseClass):
                                        image=self.focus_mode_icon,
                                        compound=tk.LEFT,
                                        command=self.focus_mode)
-        self.button_focus_mode.pack(side = 'right', fill = 'x', expand = False)
+        self.button_focus_mode.pack(side = 'right', fill = 'both', expand = False)
 
 #--------View: Status Bar Frame--------------------------------------------------------
         # create the statusbar
-        self.stbar = GuiBaseClass.statusbar
-        GuiBaseClass.message(self, msg="Waiting ......")
+        self.stbar = StatusBarDiaEdit(self.frame)
+        self.stbar.pack(side="bottom", fill="x")
+        self.stbar.set(format="Waiting ......")
+        self.connection_status()
 
 #----------------instance attributes-------------------------------------------------------
         # setting file stores state of the Application
@@ -207,7 +210,11 @@ class DiagramEditor(GuiBaseClass):
         self.root.bind("<Control-f>", self.switch2_search_entry)
         # Turn on focus mode
         self.root.bind("<Control-k><f>", self.focus_mode)
+        # Update cursor position
+        self.text.text_editor.bind("<Button>", self.update_cursor_position)
+        self.text.text_editor.bind("<KeyRelease>", self.update_cursor_position)
 
+        
 #---------Open previous saved working state---------------------------------------------
         self.open_previous_file()
 
@@ -219,7 +226,7 @@ class DiagramEditor(GuiBaseClass):
             with open(self.filename,"rt") as file:
                 for line in file:
                     self.text.insert("end",line)
-            self.message(f"File {self.filename} was opened!")
+            self.stbar.set(f"File {self.filename} was opened!")
             self.setAppTitle(self.filename)
             self.convert2_image()
             self.setting_info.set_setting("filename" , self.filename)
@@ -258,7 +265,7 @@ class DiagramEditor(GuiBaseClass):
             with open(self.filename,"rt") as file:
                 for line in file:
                     self.text.insert("end",line)
-            self.message(f"File {self.filename} was opened!")
+            self.stbar.set(f"File {self.filename} was opened!")
             self.setAppTitle(self.filename)
             self.convert2_image()
 
@@ -276,7 +283,7 @@ class DiagramEditor(GuiBaseClass):
             #show image in ImageWidget
             if os.path.exists(imgfile_png):
                     self.imagewidget.update_image(imgfile_png)
-                    self.message(f"Displaying {imgfile_png}")
+                    self.stbar.set(f"Displaying {imgfile_png}")
         else:
             self.imagewidget.display_text(self.kroki_diagram.error_message)
 
@@ -349,6 +356,13 @@ class DiagramEditor(GuiBaseClass):
                                    side='top')
             self.change2_light_mode_color()
 
+#-------METHODS: statusbar----------------------------------------------------
+    def update_cursor_position(self, event=None) -> None:
+        self.stbar.update_ln_col(self.text.text_editor.index("insert"))
+    
+    def connection_status(self) -> None:
+        self.stbar.update_internet_status()
+        self.root.after(5000, self.connection_status)
 #-------OTHER METHODS----------------------------------------------------------
 
     def toggle_checkButton(self,event=None) -> None:
