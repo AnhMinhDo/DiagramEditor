@@ -36,11 +36,6 @@ class DiagramEditor(GuiBaseClass):
         self.menubar.add_cascade(menu=menu_options, label='Options')
         self.menu['options'] = menu_options
         menu_options.add_separator()
-        # Variable to store the checkbutton state
-        self.checkbutton_var = tk.BooleanVar(value=True)
-        menu_options.add_checkbutton(label='Ask when exit',
-                                     variable=self.checkbutton_var,
-                                     command=self.toggle_checkButton)
 
         #In Menu Options add changing background options
         menu_backgrounds=tk.Menu(menu_options)
@@ -53,9 +48,6 @@ class DiagramEditor(GuiBaseClass):
         menu_options.add_cascade(menu=menu_textcolor, label='Text Color', underline=0)
         menu_textcolor.insert_command(0,label='Choose Text Color', command=self.text_color, underline=0)
         menu_textcolor.insert_command(1,label='Default Text Color', command=self.textblack, underline=0)
-
-        # overwrite windows exit button
-        root.protocol('WM_DELETE_WINDOW', self.Exit)
 
 # parent Frame for both convert-to-Image frame and search frame---------------------
         self.utilities_frame = ttk.Frame(self.frame)
@@ -366,20 +358,6 @@ class DiagramEditor(GuiBaseClass):
         self.stbar.update_internet_status()
         self.root.after(5000, self.connection_status)
 #-------OTHER METHODS----------------------------------------------------------
-
-    def toggle_checkButton(self,event=None) -> None:
-        self.checkbutton_var = not self.checkbutton_var
-
-    def Exit(self,event=None):
-        if self.checkbutton_var:
-            self.ask_exit()
-        else:
-            sys.exit(0)
-
-    def ask_exit(self) -> None:
-        answer = mbox.askyesno(title="Close Application",message="Do you want to quit the application?")
-        if answer is True:
-            sys.exit(0)
 
     def About(self,event=None) -> None:
         mbox.showinfo(
