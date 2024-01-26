@@ -23,11 +23,14 @@ class DiagramEditor(GuiBaseClass):
                                 underline=0,
                                 command=self.file_open)
         
-        mnu_file.insert_command(1,label=f"Save {'Ctrl S':>21}",
+        mnu_file.insert_command(1,label=f"New File {'Ctrl N':>14}",
+                                underline=0)
+        
+        mnu_file.insert_command(2,label=f"Save {'Ctrl S':>21}",
                                 underline=0,
                                 command=self.file_save)
         
-        mnu_file.insert_command(2,label="Save As   Ctrl Shift S",
+        mnu_file.insert_command(3,label="Save As   Ctrl Shift S",
                                 underline=0,
                                 command=self.file_save_as)
         
@@ -77,7 +80,7 @@ class DiagramEditor(GuiBaseClass):
                             "SeqDiag", "ActDiag",
                             "NwDiag", "PacketDiag",
                             "RackDiag", "Structurizr"]
-        self.combobox = ttk.Combobox(self.convert2_img_frame,
+        self.combobox: ttk.Combobox = ttk.Combobox(self.convert2_img_frame,
                                      state = 'readonly',
                                      values=self.diagram_type_list,
                                      width=15)
@@ -227,6 +230,9 @@ class DiagramEditor(GuiBaseClass):
             self.previous_dir= os.path.dirname(self.filename)
             self.setting_info.save_settings()
 
+    def new_file(self, event=None) -> None:
+        return
+    
     def file_save(self, event=None) -> None:
         if self.filename is not None:
             file = open(self.filename,"w", encoding="utf-8")
