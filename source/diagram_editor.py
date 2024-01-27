@@ -24,7 +24,8 @@ class DiagramEditor(GuiBaseClass):
                                 command=self.file_open)
         
         mnu_file.insert_command(1,label=f"New File {'Ctrl N':>14}",
-                                underline=0)
+                                underline=0,
+                                command=self.new_file)
         
         mnu_file.insert_command(2,label=f"Save {'Ctrl S':>21}",
                                 underline=0,
@@ -231,7 +232,25 @@ class DiagramEditor(GuiBaseClass):
             self.setting_info.save_settings()
 
     def new_file(self, event=None) -> None:
-        return
+        self.file_dialog=filedialog.asksaveasfilename( 
+                                    initialdir=self.previous_dir,
+                                    filetypes= [("plantuml",".pml"),
+                                                ("erd",".erd"),
+                                                ("text",".txt"),
+                                                ("other",".*")],
+                                    defaultextension="text"
+                                    )
+        if self.file_dialog!= "" :
+            self.filename=self.file_dialog
+            self.previous_dir=os.path.dirname(self.filename)
+            with open(self.filename, "w"):
+                pass
+            self.text.delete('1.0','end')
+            with open(self.filename,"rt") as file:
+                for line in file:
+                    self.text.insert("end",line)
+            self.stbar.set(f"File {self.filename} was opened!")
+            self.setting_info.set_setting("filename", self.filename)
     
     def file_save(self, event=None) -> None:
         if self.filename is not None:
@@ -243,7 +262,7 @@ class DiagramEditor(GuiBaseClass):
             self.file_save_as()
 
     def file_save_as(self, event=None) -> None:
-        self.file_dialog=filedialog.asksaveasfile( 
+        self.file_dialog=filedialog.asksaveasfilename( 
                                     initialdir=self.previous_dir,
                                     filetypes= [("plantuml",".pml"),
                                                 ("erd",".erd"),
@@ -253,7 +272,7 @@ class DiagramEditor(GuiBaseClass):
                                     )
         if self.file_dialog!= None :
             self.filename=self.file_dialog.name
-            self.previous_dir=self.filename
+            self.previous_dir=os.path.dirname(self.filename)
             self.file_save()
 
     def open_previous_file(self) -> None:

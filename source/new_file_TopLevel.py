@@ -94,7 +94,6 @@ class NewFile(tk.Toplevel):
                                     side="left",
                                     padx=5,
                                     expand=False)
-
         else:
             # remove error message
             self.warning_file_name.pack_forget()
@@ -103,15 +102,17 @@ class NewFile(tk.Toplevel):
     def set_class_filename(self, event=None) -> None:
         # check directory
         if self.dir_label.cget("text") != "" and self.input_file_name_entry.get() != "":
-            self.filename_class_attribute = f'{self.dir_label.cget("text")}/{self.input_file_name_entry.get()}'
+            # self.filename_class_attribute = f'{self.dir_label.cget("text")}/{self.input_file_name_entry.get()}'
+            self.filename_class_attribute = os.path.join(self.dir_label.cget("text"),self.input_file_name_entry.get())
+            print(self.filename_class_attribute)
             self.destroy()
             
     @classmethod
-    def askfilename(cls, root: tk.Tk) -> str:
+    def askfilename(cls, master: tk.Tk) -> str:
         #create new instance of new file topLevel: the instanace modified the class attribute
         win_ask_file_name: NewFile = cls()
-        win_ask_file_name.transient(root)
-        root.wait_window(win_ask_file_name)
+        win_ask_file_name.transient(master)
+        master.wait_window(win_ask_file_name)
         # create and assign a new variable the value of the class attribute
         new_file_path: str = cls.filename_class_attribute
         print(new_file_path)
@@ -125,6 +126,6 @@ class NewFile(tk.Toplevel):
 if __name__ == "__main__":
     root: tk.Tk = tk.Tk()
     root.geometry("800x600")
-    fil: str = NewFile.askfilename(root=root)
+    fil: str = NewFile.askfilename(master=root)
     print(fil)
     root.mainloop()
