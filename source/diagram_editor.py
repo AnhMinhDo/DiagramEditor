@@ -191,6 +191,8 @@ class DiagramEditor(GuiBaseClass):
 #---------KEYS BINDING --------------------------------------------------------------------
         # open file
         self.root.bind("<Control-o>", self.file_open)
+        # open file
+        self.root.bind("<Control-n>", self.new_file)
         # save file
         self.root.bind("<Control-s>", self.file_save)
         # save file as
@@ -254,9 +256,8 @@ class DiagramEditor(GuiBaseClass):
     
     def file_save(self, event=None) -> None:
         if self.filename is not None:
-            file = open(self.filename,"w", encoding="utf-8")
-            file.write(self.text.get("0.0","end"))
-            file.close()
+            with open(self.filename,"w", encoding="utf-8") as file:
+                file.write(self.text.get("0.0","end"))
             self.setAppTitle(self.filename)      
         else :
             self.file_save_as()
@@ -277,16 +278,18 @@ class DiagramEditor(GuiBaseClass):
 
     def open_previous_file(self) -> None:
         if self.filename != "":
-            self.saved_dia_type: str = self.setting_info.get_setting("diagram_type")
-            self.combobox.set(self.diagram_type_list[self.diagram_type_list.index(self.saved_dia_type)])
-            self.text.delete('1.0','end')
-            with open(self.filename,"rt") as file:
-                for line in file:
-                    self.text.insert("end",line)
-            self.stbar.set(f"File {self.filename} was opened!")
-            self.setAppTitle(self.filename)
-            self.convert2_image()
-
+            if os.path.exists(self.filename):
+                self.saved_dia_type: str = self.setting_info.get_setting("diagram_type")
+                self.combobox.set(self.diagram_type_list[self.diagram_type_list.index(self.saved_dia_type)])
+                self.text.delete('1.0','end')
+                with open(self.filename,"rt") as file:
+                    for line in file:
+                        self.text.insert("end",line)
+                self.stbar.set(f"File {self.filename} was opened!")
+                self.setAppTitle(self.filename)
+                self.convert2_image()
+            else:
+                self.stbar.set(f"File {self.filename} does not exist")
 #-------METHOD CONVERT TEXT DIAGRAM TO IMAGE-----------------------------------------------    
     def convert2_image(self,event=None) -> None:
         # instantiate a KrokiEncoder instance: filepath, diagram type, image type is png
@@ -392,3 +395,6 @@ class DiagramEditor(GuiBaseClass):
 
 if __name__ == '__main__':
     print("this is a module for import only")
+
+# Author: Anh-Minh Do, 01.2024, Potsdam, Germany
+# License: MIT

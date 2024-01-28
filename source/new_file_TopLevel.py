@@ -129,3 +129,6 @@ if __name__ == "__main__":
     fil: str = NewFile.askfilename(master=root)
     print(fil)
     root.mainloop()
+
+# Author: Anh-Minh Do, 12.2023, Potsdam, Germany
+# License: MIT
