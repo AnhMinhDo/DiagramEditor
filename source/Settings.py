@@ -27,7 +27,7 @@ class Settings():
                            default_flow_style=False,
                            sort_keys=False)
 
-    def get_setting(self, key, default=None) -> Any:
+    def get_setting(self, key, default=None) -> Any: # function return default value if no key is found
         return self._settings.get(key, default)
 
     def set_setting(self, key: str, value: Any) -> None:
