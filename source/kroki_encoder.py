@@ -5,9 +5,9 @@ import requests
 
 class KrokiEncoder:
     def __init__(self,
-                 file_path,
-                 diagram_type,
-                 output_img_extension) -> None:
+                 file_path: str,
+                 diagram_type: str,
+                 output_img_extension: str) -> None:
         self._file_path: str = file_path
         self._extension: str = output_img_extension
         self._diagram_type: str = diagram_type

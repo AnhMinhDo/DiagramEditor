@@ -1,0 +1,29 @@
+skinparam ranksep 30
+skinparam dpi 125
+skinparam packageTitleAlignment left
+
+Title DIAGRAM_EDITOR PROJECT
+
+package CoreUtil {
+    class KrokiEncoder {
+        +file_path
+        +extension
+        +diagram_type
+        +kroki_url
+        +image_path
+
+        #_check_file_path()
+        #_check_image_path()
+        #_text_diagram_to_kroki_url() 
+        #_kroki_response_to_image()
+        +update()
+
+    }
+
+    class CheckPath {
+        +path 
+		+delete_path()
+		+change_path()
+        +check_path()
+    }
+}
