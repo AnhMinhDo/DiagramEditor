@@ -1,4 +1,4 @@
-from source.Settings import Settings
+from source.settings import Settings
 
 def test_get_setting() -> None:
     settings_info = Settings("./tests/test_data/sample_settings_file.yaml")
