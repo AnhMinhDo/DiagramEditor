@@ -389,8 +389,8 @@ class DiagramEditor(GuiBaseClass):
 
     def About(self,event=None) -> None:
         mbox.showinfo(
-            title="About PlantUML Editor",
-            message="PlantUML Editor 2023\nAuthor: Anh-Minh Do\nPotsdam, Germany")
+            title="About Diagram Editor",
+            message="Diagram Editor\nAuthor: Anh-Minh Do\nEmail: ahd.minh@gmail.com\nPotsdam, Germany\n2023")
 
 
 if __name__ == '__main__':
