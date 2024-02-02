@@ -12,6 +12,7 @@ from source.text_editor import TextEditor
 from source.kroki_encoder import KrokiEncoder
 from source.settings import Settings
 from source.status_bar_diagram_editor import StatusBarDiaEdit
+from source.keybindings_TopLevel import Keybinding
 
 class DiagramEditor(GuiBaseClass):
     def __init__(self,root):
@@ -34,12 +35,16 @@ class DiagramEditor(GuiBaseClass):
         mnu_file.insert_command(3,label="Save As   Ctrl Shift S",
                                 underline=0,
                                 command=self.file_save_as)
+        mnu_help=self.getMenu('Help')
+        mnu_help.insert_command(0,label="Keybindings",
+                                underline=0,
+                                command=self.show_keybindings)
         
+
         # Add options menu for changing background
         menu_options = tk.Menu(self.menubar)
         self.menubar.add_cascade(menu=menu_options, label='Options')
         self.menu['options'] = menu_options
-        menu_options.add_separator()
 
         #In Menu Options add changing background options
         menu_backgrounds=tk.Menu(menu_options)
@@ -385,6 +390,10 @@ class DiagramEditor(GuiBaseClass):
     def connection_status(self) -> None:
         self.stbar.update_internet_status()
         self.root.after(5000, self.connection_status)
+
+#-------METHODS: Show keybindings----------------------------------------------------
+    def show_keybindings(self,event=None) -> None:
+        Keybinding(root=self.root)
 #-------OTHER METHODS----------------------------------------------------------
 
     def About(self,event=None) -> None:
