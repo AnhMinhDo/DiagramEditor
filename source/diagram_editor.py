@@ -210,6 +210,13 @@ class DiagramEditor(GuiBaseClass):
         self.root.bind("<Control-f>", self.switch2_search_entry)
         # Turn on focus mode
         self.root.bind("<Control-k><f>", self.focus_mode)
+        # minimize right window
+        self.root.bind("<Control-Right>", self.right_minimizing)
+        # minimize left window
+        self.root.bind("<Control-Left>", self.left_minimizing)
+        # split window
+        self.root.bind("<Control-Down>", self.even_split)
+
         # Update cursor position
         self.text.bind_event("<ButtonRelease-1>", self.update_cursor_position)
         self.text.bind_event("<KeyRelease>", self.update_cursor_position)

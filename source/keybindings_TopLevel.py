@@ -24,7 +24,10 @@ class Keybinding(tk.Toplevel):
                           ('Convert Text to Image', 'Ctrl + Alt + N'),
                           ('Focus to search box', 'Ctrl + F'),
                           ('Find Next', 'Ctrl + Alt + S'),
-                          ('Focus Mode', 'Ctrl + K F')]
+                          ('Focus Mode', 'Ctrl + K F'),
+                          ('Minimize left window', 'Ctrl + Left arrow'),
+                          ('Minimize right window', 'Ctrl + Right arrow'),
+                          ('Split windows', 'Ctrl + Down arrow')]
         for row in self.shortcuts:
             self.keybind_table.insert('','end',values=row)
         self.transient(root)
